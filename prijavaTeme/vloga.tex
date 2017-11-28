@@ -1,0 +1,137 @@
+%! TEX program = pdflatex
+\documentclass[a4paper, 12pt]{article}
+\usepackage[slovene]{babel}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+
+\topmargin=0cm
+\topskip=0cm
+\textheight=25cm
+\headheight=0cm
+\headsep=0cm
+\oddsidemargin=0cm
+\evensidemargin=0cm
+\textwidth=16cm
+\parindent=0cm
+\parskip=12pt
+
+\renewcommand{\baselinestretch}{1.2}
+
+\begin{document}
+
+\noindent
+% IZPOLNI KANDIDAT
+Primož Belej\\
+Vpisna številka: 63150398\\
+Brstnik 4, 3270 Laško\\
+Slovenija
+
+
+\bigskip
+
+{\bf Komisija za študijske zadeve}\\
+Univerza v Ljubljani, Fakulteta za računalništvo in informatiko\\
+Večna pot 113, 1000 Ljubljana
+
+{\Large\bf
+{\centering
+    Vloga za prijavo teme magistrskega dela \\%[2mm]
+\large Kandidat: Primož Belej \\[10mm]}}
+
+
+Podpisani/-a študent/-ka magistrskega programa na Fakulteti za računalništvo in informatiko, zaprošam Komisijo za študijske zadeve, da odobri temo dela, podrobno opisanega v nadaljnjem predlogu teme magistrskega dela.
+
+Okvirni naslov magistrskega dela:
+
+\hfill\begin{minipage}{\dimexpr\textwidth-2cm}
+slovensko: {\bf Oblikoskladenjsko označevanje slovenskega jezika}\\
+angleško: {\bf Part of speech tagging of slovene language}
+\end{minipage}
+
+Za mentorja/mentorico predlagam:
+
+\hfill\begin{minipage}{\dimexpr\textwidth-2cm}
+Ime in priimek, naziv: izr. prof. dr. Marko Robnik Šikonja\\
+Ustanova: Univerza v Ljubljani, Fakulteta za računalništvo in informatiko\\
+Elektronski naslov: marko.robnik@fri.uni-lj.si
+\end{minipage}
+
+Za somentorja/somentorico predlagam:
+
+\hfill\begin{minipage}{\dimexpr\textwidth-2cm}
+Ime in priimek, naziv:\\
+Ustanova:\\
+Elektronski naslov:
+\end{minipage}
+
+
+\bigskip
+
+V Ljubljani, dne …………………………
+
+Podpis mentorja: \hspace{180px} Podpis kandidata/kandidatke:
+
+
+\clearpage
+\section*{PREDLOG TEME MAGISTRSKEGA DELA}
+
+\section{Področje magistrskega dela}
+
+slovensko: obdelava naravnega jezika, globoko učenje
+angleško: natural language processing, deep learning
+
+
+\section{Ključne besede}
+
+slovensko: oblikoskladenjsko označevanje, oblikoslovno označevanje, nadzorovano učenje, konvolucijske nevronske mreže\\
+angleško: part-of-speech tagging, supervised learning, convolutional neural network
+
+
+\section{Opis teme magistrskega dela}
+
+\subsection{Uvod in opis problema}
+
+Oblikoskladenjsko označevanje besedil (v nadaljevanju označevanje) je pomemben del priprave besedila, torej nestrukturiranih podatkov, na nadaljne naloge s področja obdelave naravnega jezika.\\
+Pri tem postopku besedam določamo oznake, ki nosijo informacijo o besedni vrsti ter morebitnih dodatnih lastnostih. \\
+Za označevanje besedil se uporabljajo različne tehnike, ki ponavadi uporabljajo algoritme s področja strojnega učenja. Takšne tehnike so se izkazale za uporabne pri označevanje slovenščine in drugih morfološko bogatih jezikov, a do zdaj niso bile sposobne označevati z uspešnostjo primerljivo s človeškim strokovnjakom.\\
+V našem magistrskem delu bomo besedila v slovenskem jeziku označevali s pomočjo globokega učenja, saj se je to v preteklosti že izkazalo uspešno pri takšnih in podobnih nalogah \cite{Santos2014,Labeau2015}.
+
+
+\subsection{Pregled sorodnih del}
+
+\begin{description}
+  \item [Grčar, Krek, Ljubešič (2012) \cite{Grcar2012}] V okviru projekta Sporazumevanje v slovenskem jeziku je skupina raziskovalcev z Instituta Jožef Stefan in zavoda Trojina razvila orodje poimenovano Obeliks. Za označevanje besed so uporabili klasifikacijski algoritem, ki temelji na principu maksimalne entropije. Za učne podatke so uporabili korpus ssj500k. Za učenje in napovedovanje so značilke iz besedila dopolnili z drevesom končnic. Pri napovedovanju besedne vrste je njihov označevalnik dosegel 98,3 \% točnost, celotne oznake pa je označeval z 91,34 \% točnostjo.\\
+  \item [Ljubešić, Erjavec (2016) \cite{Ljubesic2016}] Avtorji tega dela so za osnovo uporabili označevalnik Obeliks. Osredotočili so se na optimizacijo označevanja neznanih besed. Poročajo o 25 \% izboljšavi tako pri znanih kot neznanih besedah v primerjavi z označevalnikom Obeliks. Za napovedovanje oznak so uporabili sekvenčni algoritem CRF ter uvedli dodatne spremenljivke. Za učenje napovednega modela so uporabili korpus ssj500k s številko različice 1.3.
+  \item [Dos Santos, Zadrozny (2014) \cite{Santos2014}] V tem delu sta avtorja predstavila svoj model, ki za označevanje uporablja globoko učenje. Njun model uporablja predstavitev besed na nivoju znakov. S predstavljenim modelom globokega učenja sta implementirala označevalnika za angleški in portugalski jezik. Angleški je dosegel 97,32 \% točnost, portugalski pa 97,42 \%.
+
+\end{description}
+
+\subsection{Predvideni prispevki magistrske naloge}
+
+%Navodilo:
+Opišite predvidene prispevke magistrske naloge s področja računalništva in informatike, ki so lahko strokovni ali znanstveni. Poudarite in opišite predvideni napredek ali novost vašega dela v primerjavi z obstoječim stanjem na strokovnem (ali znanstvenem) področju. Opis naj obsega približno 500 znakov s presledki vred.
+
+Pričakujemo, da nam bo v sklopu tega magistrskega dela uspelo razviti označevalnik za slovenski jezik z napovedno točnostjo primerljivo z obstoječimi označevalniki. Predvidevamo, da bomo to dosegli brez tvorjenja dodatnih značilk.
+Z  uporabo metode zlaganja obstoječih napovednih modelov z našim, bi lahko napovedno točnost še dodatno dvignili.
+
+\subsection{Metodologija}
+
+Za implementacijo naše rešitve bomo uporabili knjižnico Keras za programski jezik Python. Ta knjižnica omogoča delo z nevronskimi mrežami in ponuja enoten vmesnik za knjižnice kot sta Tensorflow in Theano.\\
+Za razvoj napovednega modela bomo uporabljali korpus ssj500k 2.0 \cite{ssj500kv2}, ki vsebuje več kot 500.000 ročno označenih besed. Primere iz korpusa bomo razdelili v učno, validacijsko ter testno množico. Na testni množici bomo primerjali uspešnost naše rešitve ter sorodnih rešitev za slovenski jezik.
+
+\subsection{Literatura in viri}
+\label{literatura}
+
+\renewcommand\refname{}
+\vspace{-50px}
+\bibliographystyle{elsarticle-num}
+\bibliography{./bibliografija/bibliography}
+
+
+\bigskip
+
+Ljubljana, \today .
+
+\end{document}
