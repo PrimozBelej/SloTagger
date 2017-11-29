@@ -22,7 +22,6 @@
 \begin{document}
 
 \noindent
-% IZPOLNI KANDIDAT
 Primož Belej\\
 Vpisna številka: 63150398\\
 Brstnik 4, 3270 Laško\\
@@ -46,8 +45,8 @@ Podpisani/-a študent/-ka magistrskega programa na Fakulteti za računalništvo 
 Okvirni naslov magistrskega dela:
 
 \hfill\begin{minipage}{\dimexpr\textwidth-2cm}
-slovensko: {\bf Oblikoskladenjsko označevanje slovenskega jezika}\\
-angleško: {\bf Part of speech tagging of slovene language}
+slovensko: {\bf Oblikoskladenjsko označevanje slovenskega jezika z globokimi nevronskimi mrežami}\\
+angleško: {\bf Part of speech tagging of slovene language using deep neural networks}
 \end{minipage}
 
 Za mentorja/mentorico predlagam:
@@ -61,9 +60,9 @@ Elektronski naslov: marko.robnik@fri.uni-lj.si
 Za somentorja/somentorico predlagam:
 
 \hfill\begin{minipage}{\dimexpr\textwidth-2cm}
-Ime in priimek, naziv:\\
-Ustanova:\\
-Elektronski naslov:
+Ime in priimek, naziv: dr. Simon Krek\\
+Ustanova: Univerza v Ljubljani, Filozofska fakulteta in Institut Jožef Stefan\\
+Elektronski naslov: simon.krek@guest.arnes.si
 \end{minipage}
 
 
@@ -79,51 +78,52 @@ Podpis mentorja: \hspace{180px} Podpis kandidata/kandidatke:
 
 \section{Področje magistrskega dela}
 
-slovensko: obdelava naravnega jezika, globoko učenje\\
-angleško: natural language processing, deep learning
+slovensko: obdelava naravnega jezika, strojno učenje\\
+angleško: natural language processing, machine learning
 
 
 \section{Ključne besede}
 
-slovensko: oblikoskladenjsko označevanje, oblikoslovno označevanje, nadzorovano učenje, konvolucijske nevronske mreže\\
-angleško: part-of-speech tagging, supervised learning, convolutional neural network
+slovensko: oblikoskladenjsko označevanje, globoko učenje, konvolucijske nevronske mreže\\
+angleško: part-of-speech tagging, deep learning, convolutional neural network
 
 
 \section{Opis teme magistrskega dela}
 
 \subsection{Uvod in opis problema}
 
-Oblikoskladenjsko označevanje besedil (v nadaljevanju označevanje) je pomemben del priprave besedila, torej nestrukturiranih podatkov, na nadaljne naloge s področja obdelave naravnega jezika.\\
-Pri tem postopku besedam določamo oznake, ki nosijo informacijo o besedni vrsti ter morebitnih dodatnih lastnostih. \\
-Za označevanje besedil se uporabljajo različne tehnike, ki ponavadi uporabljajo algoritme s področja strojnega učenja. Takšne tehnike so se izkazale za uporabne pri označevanje slovenščine in drugih morfološko bogatih jezikov, a do zdaj niso bile sposobne označevati z uspešnostjo primerljivo s človeškim strokovnjakom.\\
-V našem magistrskem delu bomo besedila v slovenskem jeziku označevali s pomočjo globokega učenja, saj se je to v preteklosti že izkazalo uspešno pri takšnih in podobnih nalogah \cite{Santos2014,Labeau2015}.
-
+Oblikoskladenjsko označevanje besedil (v nadaljevanju označevanje) je pomemben del priprave besedila, torej nestrukturiranih podatkov, za nadaljne naloge s področja obdelave in razumevanja naravnega jezika. Pri tem postopku besedam določamo oznake, ki nosijo informacijo o besedni vrsti in drugih morfoloških in skladenjskih lastnostih.\\
+Za označevanje besedil se uporabljajo algoritmi strojnega učenja, še posebej za slovenščino in druge morfološko bogate jezike.\\
+Globoko učenje je skupina algoritmov strojnega učenja. Uporablja več slojev nelinearnih procesnih enot, ki izvajajo preoblikovanja podatkov. Vsak sloj uporablja podatke iz predhodnega sloja. Tekom učenja, se enote v vmesnih slojih prilagajajo podatkom in iščejo konfiguracijo, ki bi najbolje opisovala podatke iz učne množice.\\
+V magistrskem delu bomo besedila v slovenskem jeziku označevali s pomočjo globokega učenja, saj se je to izkazalo uspešno pri podobnih nalogah \cite{Santos2014,Labeau2015,Kim2016}.
 
 \subsection{Pregled sorodnih del}
 
 \begin{description}
-  \item [Grčar, Krek, Ljubešič (2012) \cite{Grcar2012}] V okviru projekta Sporazumevanje v slovenskem jeziku je skupina raziskovalcev z Instituta Jožef Stefan in zavoda Trojina razvila orodje poimenovano Obeliks. Za označevanje besed so uporabili klasifikacijski algoritem, ki temelji na principu maksimalne entropije. Za učne podatke so uporabili korpus ssj500k. Za učenje in napovedovanje so značilke iz besedila dopolnili z drevesom končnic. Pri napovedovanju besedne vrste je njihov označevalnik dosegel 98,3 \% točnost, celotne oznake pa je označeval z 91,34 \% točnostjo.
-  \item [Ljubešić, Erjavec (2016) \cite{Ljubesic2016}] Avtorji tega dela so za osnovo uporabili označevalnik Obeliks. Osredotočili so se na optimizacijo označevanja neznanih besed. Poročajo o 25 \% izboljšavi tako pri znanih kot neznanih besedah v primerjavi z označevalnikom Obeliks. Za napovedovanje oznak so uporabili sekvenčni algoritem CRF ter uvedli dodatne spremenljivke. Za učenje napovednega modela so uporabili korpus ssj500k s številko različice 1.3.
-  \item [Dos Santos, Zadrozny (2014) \cite{Santos2014}] V tem delu sta avtorja predstavila svoj model, ki za označevanje uporablja globoko učenje. Njun model uporablja predstavitev besed na nivoju znakov. S predstavljenim modelom globokega učenja sta implementirala označevalnika za angleški in portugalski jezik. Angleški je dosegel 97,32 \% točnost, portugalski pa 97,42 \%.
+	\item [Grčar, Krek, Dobrovoljc (2012) \cite{Grcar2012}] V okviru projekta Sporazumevanje v slovenskem jeziku je skupina raziskovalcev razvila orodje imenovano Obeliks. Za označevanje besed so uporabili klasifikacijski algoritem, ki temelji na principu maksimalne entropije. Za učne podatke so uporabili korpus ssj500k \cite{ssj500kv13}. Za učenje in napovedovanje so značilke iz besedila dopolnili z drevesom končnic. Pri napovedovanju besedne vrste je označevalnik dosegel 98,3 \% točnost, celotne oznake pa je določal z 91,34 \% točnostjo.
+  \item [Ljubešić, Erjavec (2016) \cite{Ljubesic2016}] Avtorji tega dela so za osnovo uporabili označevalnik Obeliks. Osredotočili so se na optimizacijo označevanja neznanih besed. Poročajo o 98,94 \% točnosti pri napovedovanju besedne vrste, za celotne oznake pa 94,27 \%. Za napovedovanje oznak so uporabili sekvenčni algoritem pogojno naključno polje Markova (CRF, conditional random field) ter uvedli dodatne spremenljivke. Za učenje napovednega modela so uporabili korpus ssj500k različice 1.3 \cite{ssj500kv13}.
+  \item [Dos Santos, Zadrozny (2014) \cite{Santos2014}] V tem delu sta avtorja predstavila model, ki za označevanje uporablja globoko učenje. Njun model uporablja predstavitev besed na nivoju znakov. S predstavljenim modelom globokega učenja sta implementirala označevalnika za angleški in portugalski jezik. Angleški je dosegel 97,32 \% točnost, portugalski pa 97,42 \%.
 
 \end{description}
 
 \subsection{Predvideni prispevki magistrske naloge}
 
-Pričakujemo, da nam bo v sklopu tega magistrskega dela uspelo razviti označevalnik za slovenski jezik z napovedno točnostjo primerljivo z obstoječimi označevalniki. Predvidevamo, da bomo to dosegli brez tvorjenja dodatnih značilk.\\
-Z  uporabo metode zlaganja obstoječih napovednih modelov z našim, bi lahko napovedno točnost še dodatno dvignili.
+Pričakujemo, da nam bo v sklopu magistrskega dela uspelo razviti označevalnik za slovenski jezik z napovedno točnostjo primerljivo ali boljšo od obstoječih označevalnikov. Predvidevamo, da bomo to dosegli brez tvorjenja dodatnih značilk.\\
+Z uporabo ansambla obstoječih napovednih modelov in našega, bi lahko napovedno točnost še dodatno dvignili.
 
 \subsection{Metodologija}
 
 Za implementacijo naše rešitve bomo uporabili knjižnico Keras za programski jezik Python. Ta knjižnica omogoča delo z nevronskimi mrežami in ponuja enoten vmesnik za knjižnice kot sta Tensorflow in Theano.\\
-Za razvoj napovednega modela bomo uporabljali korpus ssj500k 2.0 \cite{ssj500kv2}, ki vsebuje več kot 500.000 ročno označenih besed. Primere iz korpusa bomo razdelili v učno, validacijsko ter testno množico. Na testni množici bomo primerjali uspešnost naše rešitve ter sorodnih rešitev za slovenski jezik.
+Pri imlementaciji se bomo zgledovali po modelu predstavljenem v \cite{Kim2016}. Ta model deluje na nivoju znakov, a napoveduje na nivoju besed. Vhode pošlje skozi konvolucijsko nevronsko mrežo (CNN, convolutional neural network), katere izhod uporabi na jezikovnem modelu rekurenčnih nevronskih mrež (RNN-LM, recurrent neural network language model).\\
+Za razvoj napovednega modela bomo uporabljali korpus ssj500k 2.0 \cite{ssj500kv2}, ki vsebuje več kot 500.000 ročno označenih besed. Primere iz korpusa bomo razdelili v učno, validacijsko ter testno množico. Na testni množici bomo primerjali uspešnost naše rešitve ter sorodnih rešitev za slovenski jezik. Napake bomo analizirali in skušali razložiti, kar bomo uporabili za uspešnejši ansambel večih metod.
 
 \subsection{Literatura in viri}
+% enotna raba velike zacetnice
 \label{literatura}
 
 \renewcommand\refname{}
 \vspace{-50px}
-\bibliographystyle{elsarticle-num}
+\bibliographystyle{./bibliografija/elsarticle-num}
 \bibliography{./bibliografija/bibliography}
 
 
