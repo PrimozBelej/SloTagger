@@ -691,7 +691,7 @@ Z namenom izboljšanja našega modela, smo implementirali preprost ansambel ozna
 
 Implementirali smo preprost algoritem, ki oznake za vsako besedo vhodne povedi dodeljuje na podlagi glasovanja vključenih modelov. Algoritem v primeru treh različnih, veljavnih oznak vzame tisto, ki jo predlaga naš nevronski označevalnik. V primeru da nevronski označevalnik ustvari neveljavno kombinacijo oblikoskladenjskih lastnosti, algoritem vrne oznako, ki jo predlaga označevalnik Reldi. V ostalih primerih, ko vsaj dva označevalnika predlagata isto oznako, vrne algoritem predlog večine.
 
-Pri implementaciji tega algoritma smo dali največjo težo našemu označevalniku, ker je v primerjavi označevalnikov dosegel najboljše ocene \ref{rezultati}. Izjemo za primer neveljavnih oznak smo uvedli, ker naš označevalnik takšne oznake lahko tvori, za razliko od ostalih dveh označevalnikov, ki vedno vračata veljavne oznake.
+Pri implementaciji tega algoritma smo dali največjo težo našemu označevalniku, ker je v primerjavi označevalnikov dosegel najboljše ocene (podpoglavje \ref{rezultati}). Izjemo za primer neveljavnih oznak smo uvedli, ker naš označevalnik takšne oznake lahko tvori, za razliko od ostalih dveh označevalnikov, ki vedno vračata veljavne oznake.
 
 
 %----------------------------------------------------------------
