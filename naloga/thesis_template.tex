@@ -607,7 +607,7 @@ Zapis števnika & 112 & 115 \\
 \label{tbl:indeks_lastnosti_oznak}
 \end{table}
 
-Takšna predstavitev spremeni pristop k problemu. V primeru, da bi razrede predstavili s kodiranjem one-hot, bi oblikoskladenjsko označevanje reševali z večrazredno klasifikacijo, kjer bi bila vsaka možna oznaka en razred. V našem primeru imamo drugačen cilj, saj ne dodeljujemo enega razreda, temveč več različnih oznak. Sprememba pristopa ima to slabost, da lahko model napoveduje kombinacije oblikoskladenjskih lastnosti, ki ne sodijo skupaj in tako tvori neveljavne oblikoskladenjske oznake. Primer neveljavne oznake je glagol, ki mu model pripiše sklon.
+Takšna predstavitev spremeni pristop k problemu. V primeru, da bi razrede predstavili s kodiranjem one-hot, bi oblikoskladenjsko označevanje reševali z večrazredno klasifikacijo, kjer bi bila vsaka možna oznaka en razred. V našem primeru imamo drugačen cilj, saj ne dodeljujemo enega razreda, temveč več različnih oznak. Takšen pristop imenujemo večznačna klasifikacija. Sprememba pristopa ima to slabost, da lahko model napoveduje kombinacije oblikoskladenjskih lastnosti, ki ne sodijo skupaj in tako tvori neveljavne oblikoskladenjske oznake. Primer neveljavne oznake je glagol, ki mu model pripiše sklon.
 
 Ta problem smo poskusili omejiti s tem, da smo vse vektorje lastnosti razširili z dodatnim poljem ki označuje, da ta lastnost ni veljavna. S temi dodatnimi polji smo želeli nevronskemu modelu eksplicitno označiti, kdaj določena lastnost ni veljavna.
 
@@ -670,13 +670,13 @@ Jezikovni model smo implementirali z gradnikoma LSTM in Bidirectional, ki sta se
 \subsection*{Odločitveni model}
 %
 
-Za določanje oznak smo kot zadnji gradnik našega modela dodali sloj tesno povezanih enot. Teh enot je 118; toliko, kolikor je dolžina naših predstavitev oznak. Ker smo želeli v vsaki izmed enot dobiti oceno verjetnosti smo uporabili za aktivacijsko funkcijo uporabili logistično funkcijo.
+Za določanje oznak smo kot zadnji gradnik našega modela dodali sloj tesno povezanih enot. Teh enot je 118; toliko, kolikor je dolžina naših predstavitev oznak. Ker smo želeli v vsaki izmed enot dobiti oceno verjetnosti oznake smo za aktivacijo uporabili logistično funkcijo.
 
 \section{Učenje modela}
 
 Našo nevronsko mrežo smo med razvojem učili na 90 odstotkih celotne učne množice. Za funkcijo izgube smo določili binarno prečno entropijo. Binarna prečna entropija je primerna funkcija izgube pri problemih klasifikacije z več oznakami. Ta funkcija je že implementirana v knjižnici Tensorflow in podprta v Kerasu.
 
-Dokončno sestavljen označevalnik smo učili z optimizacijskim algoritmom Adam v 30 sprehodih skozi učno množico. Na sliki \ref{fig:loss} je prikazano gibanje vrednosti funkcije izgube med učenjem. Pojemajoče padanje nakazuje, da se je algoritem približal optimumu, kar smo tudi potrdili s preizkusi na testni množici in s prečnim preverjanjem.
+Dokončno sestavljen označevalnik smo učili z optimizacijskim algoritmom Adam v 30 sprehodih skozi učno množico. Na sliki \ref{fig:loss} je prikazano gibanje vrednosti funkcije izgube med učenjem. Pojemajoče padanje nakazuje, da se je optimizacijski algoritem približal optimalni konfiguraciji uteži v nevronski mreži, kar smo tudi potrdili s preizkusi na testni množici in s prečnim preverjanjem.
 
 \begin{figure}[H]
 \label{fig:loss}
@@ -701,32 +701,68 @@ Pri implementaciji tega algoritma smo dali največjo težo našemu označevalnik
 \label{ch:evalvacija}
 % * problem neobstoječih oznak
 % Prečno preverjanje
-\section{Primerjava označevalnikov}
-\subsection*{Metodologija}
+\section*{Metodologija}
 
+\subsection*{Mere kvalitete razvrščanja}
+% predstavitev mer; kaj so mere; slabosti; prednosti
+\subsubsection*{Točnost}
+\subsubsection*{Preciznost}
+\subsubsection*{Priklic}
+\subsubsection*{Mera F}
 % točnost
 % precision
 % recall
 % F1
 
-% prečno preverjanje
-\subsubsection*{Prečno preverjanje}
+\subsection*{Prečno preverjanje}
+% prečno preverjanje;
+% kaj je kfold cv; kaj odpravlja; slabost daljšega računanja,
+
+\section{Primerjava označevalnikov}
+
 
 \subsection*{Rezultati}
 \label{rezultati}
 
+% neenakomerna porazdelitev oznaka - slabost, ki se ji ne moremo izogniti
+
 % za besedne vrste lahko razširjena ocena (f1, precision, recall)
-% za celotne oznake samo klasifikacijska točnost
+
+% za celotne oznake samo klasifikacijska točnost in recall. precission ima tezave, ce za doloceno oznako ni napovedane vrednosti. recall ima tezave, ce za doloceno oznako ni resnicne vrednosti.
+
+% Najboljša ocena vsake vrstice naj bo odebeljena
 \begin{table}
-\caption{ocene}
+\caption{Ocene označevalnikov pri določanju besedne vrste. Ocene so izračunane iz mere F1 z desetkratnim prečnim preverjanjem. Skupna ocena označevalnikov je izračunana kot uteženo povprečje.}
     \begin{center}
-        \begin{tabular}{l l l}
+        \begin{tabular}{l l l l l}
         \hline
-Označevalnik & Točnost besednih vrst & Točnost oznak \\ \hline
-Obeliks & 0.923 & 0.810 \\
-Reldi & 0.987 & 0.943 \\
-Nevronski označevalnik & 0.988 & 0.956 \\
-Ansambel z večino & 0.991 & 0.955 \\ \hline
+Besedna vrsta & Obeliks & Reldi & Nevro & Ansambel \\ \hline
+Samostalnik & 0.0 & 0.0 & 0.0 & 0.0 \\
+Glagol & 0.0 & 0.0 & 0.0 & 0.0 \\
+Pridevnik & 0.0 & 0.0 & 0.0 & 0.0 \\
+Prislov & 0.0 & 0.0 & 0.0 & 0.0 \\
+Zaimek & 0.0 & 0.0 & 0.0 & 0.0 \\
+Števnik & 0.0 & 0.0 & 0.0 & 0.0 \\
+Predlog & 0.0 & 0.0 & 0.0 & 0.0 \\
+Veznik & 0.0 & 0.0 & 0.0 & 0.0 \\
+Členek & 0.0 & 0.0 & 0.0 & 0.0 \\
+Medmet & 0.0 & 0.0 & 0.0 & 0.0 \\
+Okrajšava & 0.0 & 0.0 & 0.0 & 0.0 \\
+Neuvrščeno & 0.0 & 0.0 & 0.0 & 0.0 \\
+Ločilo & 0.0 & 0.0 & 0.0 & 0.0 \\ \hline
+Skupno & 0.0 & 0.0 & 0.0 & 0.0 \\ \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+% CELOTNE OZNAKE
+\begin{table}
+\caption{Ocene označevalnikov pri dodeljevanju celotne oznake. Uporabljena ocena je klasifikacijska točnost pridobljena z desetkratnim prečnim preverjanjem.}
+    \begin{center}
+        \begin{tabular}{l l l l}
+        \hline
+Obeliks & Reldi & Nevro & Ansambel \\ \hline
+0.810 & 0.943 & 0.956 & 0.955 \\ \hline
         \end{tabular}
     \end{center}
 \end{table}
