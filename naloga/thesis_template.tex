@@ -53,6 +53,16 @@
 \newcommand{\mysupervisor}{prof.~dr.\ Marko Robnik Šikonja}
 \newcommand{\mycosupervisor}{dr.\ Simon Krek}
 
+\newcommand{\CcImageCc}[1]{%
+	\includegraphics[scale=#1]{cc_cc_30.pdf}%
+}
+\newcommand{\CcImageBy}[1]{%
+	\includegraphics[scale=#1]{cc_by_30.pdf}%
+}
+\newcommand{\CcImageSa}[1]{%
+	\includegraphics[scale=#1]{cc_sa_30.pdf}%
+}
+
 % include formatted front pages
 \input{style/thesis_front_pages}
 
@@ -68,27 +78,31 @@
 % Motivacija
 
 %% kaj je POSTagging
-Oblikoskladenjsko označevanje je naloga s področja obdelave naravnega jezika. Cilj te naloge je za vhodne povedi v naravnem jeziku poiskati ustrezno zaporedje oblikoskladenjskih oznak. Oblikoskladenjske oznake vsebujejo informacijo o besedni vrsti in dodatnih morfoloških lastnostih besed.
+Oblikoskladenjsko označevanje je naloga s področja obdelave naravnega jezika, ki za vhodne povedi v naravnem jeziku poišče ustrezno zaporedje oblikoskladenjskih oznak. Oblikoskladenjske oznake vsebujejo informacijo o besedni vrsti in dodatnih morfoloških lastnostih besed.
 
 %% zakaj POSTagging
-Ta naloga je pomemben del predpriprave besedil na nadaljnje naloge s področja strojne obdelave naravnega jezika. S pomočjo oznak se lahko računalniški algoritmi naučijo natančneje prevajati besedila, povzemati njihovo vsebino in opravljati druge naloge, pri katerih je koristno poznavanje morfologije besed.
+Ta naloga je pomemben del predpriprave besedil za nadaljnjo strojno obdelavo naravnega jezika. S pomočjo oznak se lahko računalniški algoritmi naučijo natančneje prevajati besedila, povzemati njihovo vsebino in opravljati druge naloge, pri katerih je koristno poznavanje morfologije besed.
 
 %% Kako se lotiti POSTagginga (splošno)
-Računskega oblikoskladenjskega označevanja se lotevamo predvsem z algoritmi strojnega učenja. Za označevanje morfološko bogatih jezikov, med katere prištevamo tudi slovenščino, so se za učinkovite izkazali označevalniki temelječi na globokih nevronskih mrežah. Na globokih nevronskih mrežah temelji tudi naš označevalnik, ki ga bomo predstavili v nadaljevanju.
+Računskega oblikoskladenjskega označevanja se lotevamo predvsem z algoritmi strojnega učenja. Za označevanje so se za učinkovite izkazali označevalniki temelječi na globokih nevronskih mrežah. Tak je tudi naš označevalnik, ki ga bomo predstavili v nadaljevanju.
+
+%% Težave označevanja
+% Veliko možnih oznak
+% Morfološko bogati jeziki
+%% Potrebni viri
 
 % Napoved vsebine po poglavjih
 
 % 2. poglavje - Oblikoskladenjsko označevanje
-V poglavju REF predstavimo oblikoskladenjsko označevanje in algoritmične pristope k oblikoskladenjskem označevanju. Opišemo probleme, ki se pojavljajo pri tej nalogi, načine reševanja teh problemov in posebnosti pri označevanju besedil v slovenskem jeziku. V tem poglavju naredimo tudi pregled obstoječih označevalnikov za slovenski jezik.
+V poglavju \ref{ch:pos} predstavimo oblikoskladenjsko označevanje in algoritmične pristope k oblikoskladenjskem označevanju. Opišemo probleme, ki se pojavljajo pri tej nalogi, načine reševanja teh problemov in posebnosti pri označevanju besedil v slovenskem jeziku. V tem poglavju naredimo tudi pregled obstoječih označevalnikov za slovenski jezik.
 
 % 3. poglavje - Globoke nevronske mreže za besedila
-Uporabo nevronskih mrež pri obdelavi besedil opišemo v poglavju REF. Predstavimo arhitekture nevronskih mrež, ki se uporabljajo pri obdelavi besedil. Opišemo tudi prispevke s tega področja, ki so vplivala na zasnovo naše rešitve.
+Uporabo nevronskih mrež pri obdelavi besedil opišemo v poglavju \ref{ch:nn}. Predstavimo uspešne arhitekture nevronskih mrež in prispevke, ki so vplivali na zasnovo naše rešitve.
 
-% 4. poglavje - Arhitektura rešitve
-Sledi poglavje REF z opisom naše rešitve. Na tem mestu opišemo podatke s katerimi delamo, pripravo podatkov na modeliranje in zgradbo našega modela. Pri zgradbi modela opišemo arhitekturo posameznih nevronskih mrež, ki sestavljajo našo rešitev.
+V poglavju \ref{ch:arhitektura} opišemo našo rešitev. Začnemo s podatki in njihovo pripravo na modeliranje. Pri opisu zgradbe modela opišemo arhitekturo posameznih nevronskih mrež, ki sestavljajo našo rešitev.
 
 % 5. poglavje - Evalvacija
-Naš nevronski označevalnik ovrednotimo v poglavju REF. V tem poglavju opišemo postopek ocenjevanja napovedi našega označevalnika in naredimo primerjavo našega označevalnika s sorodnimi.
+Naš nevronski označevalnik ovrednotimo v poglavju \ref{ch:evalvacija}. V tem poglavju opišemo postopek ocenjevanja napovedi našega označevalnika in naredimo primerjavo našega označevalnika s sorodnimi.
 
 % 6. poglavje - Zaključki
 V sklepnem poglavju izpostavimo glavne prispevke našega dela in komentiramo rezultate primerjave označevalnikov. Navedemo tudi razmisleke o možnih izboljšavah naše rešitve.
@@ -101,12 +115,12 @@ V sklepnem poglavju izpostavimo glavne prispevke našega dela in komentiramo rez
 \label{ch:pos}
 
 % * kaj je to pos tagging
-V uvodu smo povedali, da pri oblikoskladenjskem označevanju pripisujemo besedam oblikoskladenjske oznake in da te oznake vsebujejo informacijo o besedni vrsti in pripadajočih morfoloških in oblikovnih lastnostih.
+Pri oblikoskladenjskem označevanju pripisujemo besedam oblikoskladenjske oznake, ki vsebujejo informacijo o besedni vrsti in pripadajočih morfoloških in oblikovnih lastnostih.
 
 % * zakaj ga rabimo
-Besedilo je po naravi nestrukturirana oblika podatkov, zaradi česar je iz njega težko računsko izpeljevati sklepe o pomenu. Oblikoskladenjske oznake vnesejo v besedilo strukturo in tako olajšajo odkrivanje pomena in nadaljnjo delo, ki zahteva semantično razumevanje.
+Besedilo je po naravi nestrukturirana oblika podatkov, zaradi česar je iz njega težko računsko izpeljevati sklepe o pomenu. Oblikoskladenjske oznake vnesejo v besedilo strukturo in tako olajšajo odkrivanje pomena.
 
-Oblikoskladenjske oznake se uporabljajo kot dodatne značilke pri algoritmičnem reševanju nalog kot sta (REF jurafsky ch8):
+Oblikoskladenjske oznake se uporabljajo kot dodatne značilke pri algoritmičnem reševanju nalog kot sta:
 \begin{description}
     \item[Določanje imenskih entitet] Poznavanje oblikoskladenjskih oznak olajša določanje entitet (osebe, organizacije, ...). Imenske entitete se uporabljajo pri luščenju informacij iz besedila.
     \item[Prepoznava govora in tvorjenje govora] Za pravilno naglaševanje besed in poudarke pri izgovorjavi povedi.
@@ -704,11 +718,27 @@ Pri implementaciji tega algoritma smo dali največjo težo našemu označevalnik
 \section*{Metodologija}
 
 \subsection*{Mere kvalitete razvrščanja}
+
 % predstavitev mer; kaj so mere; slabosti; prednosti
+Mere, ki smo jih uporabili za ocenjevanje označevalnikov se v splošnem uporabljajo za ocenjevanje klasifikacijskih algoritmov. Kadar uporabljamo mere preciznosti, priklica in F1 pri večrazredni klasifikaciji, izračunamo oceno za vsakega izmed razredov. Skupek ocen pri vseh razredih lahko združimo v eno oceno. Ustrezen način posplošitve ocene je z uporabo povprečja, ki ga utežimo s številom vzorcev, ki pripadajo nekemu razredu.
+
 \subsubsection*{Točnost}
+Točnost je mera, ki predstavlja razmerje med številom pravilno razvrščenih vzorcev in številom vseh vzorcev.
+
 \subsubsection*{Preciznost}
+V primeru dvorazredne klasifikacije je mera preciznosti definirana kot razmerje med številom resnično pozitivnih vzorcev in številom vzorcev za katere je bil napovedan pozitiven razred. Nizka ocena preciznosti lahko kaže na veliko število napačno pozitivno klasificiranih vzorcev.
+
+\begin{equation}
+\text{preciznost} = \frac{TP}{TP+FP}
+\end{equation}
+
+
 \subsubsection*{Priklic}
-\subsubsection*{Mera F}
+
+\subsubsection*{Mera F1}
+
+
+
 % točnost
 % precision
 % recall
@@ -730,6 +760,21 @@ Pri implementaciji tega algoritma smo dali največjo težo našemu označevalnik
 
 % za celotne oznake samo klasifikacijska točnost in recall. precission ima tezave, ce za doloceno oznako ni napovedane vrednosti. recall ima tezave, ce za doloceno oznako ni resnicne vrednosti.
 
+\begin{table}
+\caption{Skupne ocene označevalnikov pri določanju besednih vrst. Pri merah preciznosti, priklica in F1 smo ocene po razredih utežili s številom vzorcev v razredu.}
+    \begin{center}
+        \begin{tabular}{l l l l l}
+        \hline
+Mera & Obeliks & Reldi & Nevro & Ansambel \\ \hline
+Točnost & 0.983 & 0.988 & 0.991 & 0.992 \\
+Preciznost & 0.983 & 0.988 & 0.991 & 0.992 \\
+Priklic & 0.983 & 0.988 & 0.991 & 0.992 \\
+Mera F1 & 0.983 & 0.988 & 0.991 & 0.992 \\\hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+
 % Najboljša ocena vsake vrstice naj bo odebeljena
 \begin{table}
 \caption{Ocene označevalnikov pri določanju besedne vrste. Ocene so izračunane iz mere F1 z desetkratnim prečnim preverjanjem. Skupna ocena označevalnikov je izračunana kot uteženo povprečje.}
@@ -737,23 +782,27 @@ Pri implementaciji tega algoritma smo dali največjo težo našemu označevalnik
         \begin{tabular}{l l l l l}
         \hline
 Besedna vrsta & Obeliks & Reldi & Nevro & Ansambel \\ \hline
-Samostalnik & 0.0 & 0.0 & 0.0 & 0.0 \\
-Glagol & 0.0 & 0.0 & 0.0 & 0.0 \\
-Pridevnik & 0.0 & 0.0 & 0.0 & 0.0 \\
-Prislov & 0.0 & 0.0 & 0.0 & 0.0 \\
-Zaimek & 0.0 & 0.0 & 0.0 & 0.0 \\
-Števnik & 0.0 & 0.0 & 0.0 & 0.0 \\
-Predlog & 0.0 & 0.0 & 0.0 & 0.0 \\
-Veznik & 0.0 & 0.0 & 0.0 & 0.0 \\
-Členek & 0.0 & 0.0 & 0.0 & 0.0 \\
-Medmet & 0.0 & 0.0 & 0.0 & 0.0 \\
-Okrajšava & 0.0 & 0.0 & 0.0 & 0.0 \\
-Neuvrščeno & 0.0 & 0.0 & 0.0 & 0.0 \\
-Ločilo & 0.0 & 0.0 & 0.0 & 0.0 \\ \hline
-Skupno & 0.0 & 0.0 & 0.0 & 0.0 \\ \hline
+Samostalnik & 0.985 & 0.99 & 0.991 & \textbf{0.994} \\
+Glagol      & 0.99  & 0.992 & 0.995 & \textbf{0.996} \\
+Pridevnik   & 0.972 & 0.976 & 0.982 & \textbf{0.984} \\
+Prislov     & 0.932 & 0.952 & \textbf{0.966} & 0.961 \\
+Zaimek      & 0.985 & 0.987 & \textbf{0.995} & 0.993 \\
+Števnik     & 0.991 & 0.992 & 0.997 & \textbf{0.997} \\
+Predlog     & 0.995 & 0.998 & 0.999 & \textbf{0.999} \\
+Veznik      & 0.98 & 0.99 & \textbf{0.993} & 0.991 \\
+Členek      & 0.98 & 0.985 & \textbf{0.99} & 0.988 \\
+Medmet      & \textbf{0.794} & 0.731 & 0.55 & 0.758 \\
+Okrajšava   & 0.966 & 0.994 & 0.997 & \textbf{0.998} \\
+Neuvrščeno  & 0.532 & 0.628 & 0.639 & \textbf{0.654} \\
+Ločilo      & 0.993 & 0.999 & 0.999 & \textbf{0.999} \\ \hline
+Skupno      & 0.983 & 0.988 & 0.991 & \textbf{0.992} \\ \hline
         \end{tabular}
     \end{center}
 \end{table}
+
+0.99384178, 0.99561778, 0.98365072, 0.96087752, 0.99316284,
+       0.99731259, 0.99873979, 0.99121025, 0.98785534, 0.75776335,
+       0.99847572, 0.65402899, 0.9999939
 
 % CELOTNE OZNAKE
 \begin{table}
@@ -762,7 +811,7 @@ Skupno & 0.0 & 0.0 & 0.0 & 0.0 \\ \hline
         \begin{tabular}{l l l l}
         \hline
 Obeliks & Reldi & Nevro & Ansambel \\ \hline
-0.810 & 0.943 & 0.956 & 0.955 \\ \hline
+0.927 & 0.943 & 0.956 & 0.955 \\ \hline
         \end{tabular}
     \end{center}
 \end{table}
