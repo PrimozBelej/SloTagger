@@ -833,7 +833,7 @@ Ocene lastnosti smo zapisali v tabelo \ref{tbl:ocene_lastnosti}. V tabeli opazim
 
 Pri ocenah z neuteženo mero F1 opazimo nižje ocene. Za nekatere izmed lastnosti z nižjo oceno izrišemo matrike napačnih klasifikacij, da bi bolje razumeli kakšne so napake. Na sliki \ref{fig:confusionbv} s klasifikacijami besednih vrst vidimo, da sta pri napačnih klasifikacijah besedni vrsti medmet in neuvrščeno najpogosteje označeni kot samostalnik.
 
-Pripravili smo matrike napačnih klasifikacij za glagolske oblike (\ref{fig:confusionglagolskeoblike}), vrste števnikov (\ref{fig:confstevnik}), spol svojine, ki je lastnost zaimkov \ref{fig:confusionspolsvojine}, \ref{fig:confusionzivost}.
+Pripravili smo matrike napačnih klasifikacij za glagolske oblike (glej sliko \ref{fig:confusionglagolskeoblike}), vrste števnikov (slika \ref{fig:confstevnik}), spol svojine, ki je lastnost zaimkov (slika \ref{fig:confusionspolsvojine}) in za živost (slika \ref{fig:confusionzivost}), ki se pripisuje nekaterim samostalnikom.
 
 \begin{table}
 \caption{Ocene nevronskega označevalnika pri napovedovanju vrednosti posameznih lastnosti. Utežena mera F1 izračuna skupno oceno vseh vrednosti lastnosti s povprečjem uteženim s število primerov posamezne lastnosti. Neutežena mera izračuna skupno oceno iz povprečja, ne glede na število primerov posamezne vrednosti.}
@@ -875,7 +875,7 @@ Zapis števnika & 1.0 & 1.0\\
 \begin{figure}
 \centering
 \caption{Matrika napačnih klasifikacij za besedne vrste. Izstopata razreda za medmet in neuvrščeno, ki ju model največkrat označi kot samostalnik.}
-\includegraphics[width=0.7\textwidth]{besedne_vrste.pdf}
+\includegraphics[width=0.9\textwidth]{besedne_vrste.pdf}
 \label{fig:confusionbv}
 \end{figure}
 
@@ -896,14 +896,14 @@ Zapis števnika & 1.0 & 1.0\\
 \begin{figure}
 \centering
 \caption{Matrika klasifikacij za lastnost spola svojine, ki je lastnost zaimka. Glavna težava je srednji spol, ki ga označevalnik razvršča k moškemu.}
-\includegraphics[width=0.7\textwidth]{spol_svojine.pdf}
+\includegraphics[width=0.65\textwidth]{spol_svojine.pdf}
 \label{fig:confusionspolsvojine}
 \end{figure}
 
 \begin{figure}
 \centering
 \caption{Matrika klasifikacij živosti. Živost je lastnost, ki se pojavlja pri nekaterih vrstah samostalnikov, drugod pa ni veljavna. Označevalnik ne pripisuje lastnosti živosti vsem besedam, ki bi jim jo moral. Živim samostalnikom pogosteje pripiše neveljavno živost kot neživim.}
-\includegraphics[width=0.7\textwidth]{zivost.pdf}
+\includegraphics[width=0.65\textwidth]{zivost.pdf}
 \label{fig:confusionzivost}
 \end{figure}
 
