@@ -84,12 +84,15 @@ Oblikoskladenjsko označevanje je naloga s področja obdelave naravnega jezika, 
 Ta naloga je pomemben del predpriprave besedil za nadaljnjo strojno obdelavo naravnega jezika. S pomočjo oznak se lahko računalniški algoritmi naučijo natančneje prevajati besedila, povzemati njihovo vsebino in opravljati druge naloge, pri katerih je koristno poznavanje morfologije besed.
 
 %% Kako se lotiti POSTagginga (splošno)
-Računskega oblikoskladenjskega označevanja se lotevamo predvsem z algoritmi strojnega učenja. Za označevanje so se za učinkovite izkazali označevalniki temelječi na globokih nevronskih mrežah. Tak je tudi naš označevalnik, ki ga bomo predstavili v nadaljevanju.
+Računskega oblikoskladenjskega označevanja se lotevamo predvsem z algoritmi strojnega učenja. Pri tem ne zadostujejo navadni klasifikacijski algoritmi, saj mora označevalnik zaznati odvisnosti med besedami in njihovimi oznakami. Zakonitosti naravnih jezikov so kompleksne in navadno vključujejo številne posebne primere. Da se algoritem nauči napovedovanja pravilnih oblikoskladenjskih oznak, potrebuje zbirko ročno označenih povedi iz katerih lahko prepozna ponavljajoče se vzorce.
+
+Za označevanje so se za učinkovite izkazali označevalniki temelječi na globokih nevronskih mrežah. Tak je tudi naš označevalnik, ki ga bomo predstavili v nadaljevanju.
 
 %% Težave označevanja
 % Veliko možnih oznak
 % Morfološko bogati jeziki
 %% Potrebni viri
+
 
 % Napoved vsebine po poglavjih
 
@@ -120,7 +123,7 @@ Pri oblikoskladenjskem označevanju pripisujemo besedam oblikoskladenjske oznake
 % * zakaj ga rabimo
 Besedilo je po naravi nestrukturirana oblika podatkov, zaradi česar je iz njega težko računsko izpeljevati sklepe o pomenu. Oblikoskladenjske oznake vnesejo v besedilo strukturo in tako olajšajo odkrivanje pomena.
 
-Oblikoskladenjske oznake se uporabljajo kot dodatne značilke pri algoritmičnem reševanju nalog kot sta:
+Oblikoskladenjske oznake se uporabljajo kot dodatne značilke pri algoritmičnem reševanju različnih nalog. Jurafsky in Martin \cite{jurafsky_martin_2014} izpostavljata:
 \begin{description}
     \item[Določanje imenskih entitet] Poznavanje oblikoskladenjskih oznak olajša določanje imenskih entitet (osebe, organizacije, ...). Le-te se uporabljajo pri luščenju informacij iz besedila.
     \item[Prepoznava govora in tvorjenje govora] Za pravilno naglaševanje besed in poudarke pri izgovorjavi povedi je potrebno poznati morfološko zgradbo besed.
@@ -144,7 +147,7 @@ vojna & Sozei & Samostalnik, občno ime, ženski spol, ednina, imenovalnik \\
 \label{tbl:oznacenapoved}
 \end{table}
 
-V tabeli ~\ref{tbl:oznacenapoved} vidimo primer označene povedi skupaj z razlago posameznih oznak. Primer je vzet iz jezikovnega korpusa ssj500k(\cite{ssj500kv2}), v katerem so uporabljene oblikoskladenjske oznake iz nabora MULTEXT-East.
+V tabeli ~\ref{tbl:oznacenapoved} vidimo primer označene povedi skupaj z razlago posameznih oznak. Primer je vzet iz jezikovnega korpusa ssj500k \cite{ssj500kv2}, v katerem so uporabljene oblikoskladenjske oznake iz nabora MULTEXT-East \cite{multext-east}.
 
 % V tem poglavju hočem povedati:
 % * kako se tega lotevamo
@@ -155,16 +158,16 @@ V tabeli ~\ref{tbl:oznacenapoved} vidimo primer označene povedi skupaj z razlag
 
 \section{Algoritmične rešitve}
 \label{sec:pos:alg}
-Za določanja oblikoskladenjskih oznak ne zadostujejo enolične preslikave iz besed v oznake, saj za en zapis besede običajno velja mnogo različnih oznak. Za doseganje visoke točnosti oznak, se uporablja predvsem algoritme strojnega učenja.
+Določanje oblikoskladenjskih oznak ni enolična preslikava iz besed v oznake, saj je za en zapis besede običajno mogočih več različnih oznak. Za doseganje visoke točnosti napovedovanja oznak se uporablja predvsem algoritme strojnega učenja.
 
-V tem podpoglavju bomo predstavili pogoste pristope k označevanju z uporabo strojnega učenja. Pristop z nevronskimi mrežami, ki smo ga uporabili v tem diplomskem delu, bomo podrobneje predstavili v naslednjih dveh poglavjih (~\ref{ch:nn}, ~\ref{ch:arhitektura}).
+V tem podpoglavju bomo predstavili klasične pristope k označevanju z uporabo strojnega učenja. Pristop z nevronskimi mrežami, ki smo ga uporabili v tem delu, bomo podrobneje predstavili v  poglavjih ~\ref{ch:nn} in ~\ref{ch:arhitektura}.
 
 \subsection*{Skriti markovski modeli}
 % HMM na kratko
-Skriti markovski modeli (Hidden Markov models, HMM) so sekvenčni modeli. Sekvenčni model vsakemu elementu zaporedja dodeli oznako ali razred. Sekvenčni model torej dela preslikave iz zaporedja opažanj v zaporedje oznak, kar tudi ustreza zahtevam oblikoskladenjskega označevanja: poved je zaporedje opažanj, oznake besed v povedi pa so zaporedje razredov.
+Skriti markovski modeli (Hidden Markov models, HMM) so sekvenčni modeli, ki vsakemu elementu zaporedja dodelijo oznako ali razred. Sekvenčni model torej preslikuje iz zaporedja opažanj v zaporedje oznak, kar ustreza zahtevam oblikoskladenjskega označevanja: poved je zaporedje opažanj, oznake besed v povedi pa so zaporedje razredov.
 
 % HMM delovanje
-HMM deluje tako, da izračuna verjetnostno porazdelitev za vsa možna zaporedja oznak pri nekem zaporedju opažanj in izbere najverjetnejše zaporedje. Gre za nadgradnjo Markovskih verig, modelov s katerimi opisujemo verjetnosti zaporedja slučajnih spremenljivk, ki imajo za zalogo vrednosti množico stanj. Markovske verige niso primerne za označevanje, ker opisujejo samo vidna stanja, ne pa tudi skritih stanj. V primeru oblikoskladenjskega označevanja so vidna stanja besede, skrita stanja pa oznake. Označevanje s skritim markovskim modelom je prikazano na skici (~\ref{fig:hmm}).
+HMM deluje tako, da izračuna verjetnostno porazdelitev za vsa možna zaporedja oznak pri nekem zaporedju opažanj in izbere najverjetnejše zaporedje. Gre za nadgradnjo Markovskih verig, modelov, s katerimi opisujemo verjetnosti zaporedja slučajnih spremenljivk, ki imajo za zalogo vrednosti množico stanj. Markovske verige niso primerne za označevanje, ker opisujejo samo vidna stanja, ne pa tudi skritih stanj. V primeru oblikoskladenjskega označevanja so vidna stanja besede, skrita stanja pa oznake. Označevanje s skritim markovskim modelom je prikazano na skici (~\ref{fig:hmm}).
 
 Skriti markovski modeli prvega reda imajo dve predpostavki:
 \begin{description}
@@ -186,48 +189,48 @@ Postopek prirejanja zaporedja oznak zaporedju opažanj imenujemo dekodiranje. Pr
 
 % HMM prednosti
 % HMM slabosti
-Označevalniki osnovani na skritih markovskih modelih v praksi uporabljajo izboljšave osnovnega markovskega modela prvega reda. Prva takšna izboljšava je razširitev kontekstnega okna. Pri računanju verjetnosti za neko oznako pri prejšnjih dveh oznakah dobimo trigramski model. Takšna razširitev navadno prinese izboljšave k točnosti označevanja, a se hkrati poveča tudi kompleksnost dekodiranja.
+Označevalniki osnovani na skritih markovskih modelih v praksi uporabljajo izboljšave osnovnega markovskega modela prvega reda. Prva takšna izboljšava je razširitev kontekstnega okna. Pri računanju verjetnosti za neko oznako pri prejšnjih dveh oznakah dobimo trigramski model. Takšna razširitev navadno izboljša točnost označevanja, a se poveča kompleksnost dekodiranja.
 
 \begin{description}
 	\item[Bigramski model] $ P(t_1^n) \approx \prod_{i=1}^{n}P(t_i|t_{i-1}) $
 	\item[Trigramski model] $ P(t_1^n) \approx \prod_{i=1}^{n}P(t_i|t_{i-1}, t_{i-2}) $
 \end{description}
 
-Pogosta težava se pojavi pri neznanih besedah. Neznane besede so takšne, ki se niso pojavile v učni množici in jih algoritem še ni videl. To težavo rešujemo z obravnavanjem delov besed kot so pogoste končnice, začetki besed in velike začetnice.
+Pogosta težava so neznane besede, ki se niso pojavile v učni množici in jih algoritem še ni videl. Težavo rešujemo z obravnavanjem delov besed, kot so pogoste končnice, začetki besed in velike začetnice.
 
-S takšnimi izboljšavami so lahko skriti markovski modeli primerno orodje za označevanje Brants(2000) REF poroča o 96.7\% točnosti označevanja, kar je primerljivo z modeli maksimalne entropije in nevronskimi označevalniki.
+S takšnimi izboljšavami so lahko skriti markovski modeli primerno orodje za označevanje. Brants \cite{Brants2000} poroča o 96.7\% točnosti označevanja, kar je primerljivo z modeli maksimalne entropije in nevronskimi označevalniki.
 
 
 \subsection*{Modeli maksimalne entropije} \label{postagging:mme}
-Pri markovskih modelih maksimalne entropije (maximum entropy Markov models, MEMM) gre za model logistične regresije uporabljen na poseben način. Logistična regresija je klasifikacijski algoritem, ki pa ni sekvenčen in je tako sam po sebi neprimeren za označevanje zaporedij. Če uporabimo logistično regresijo na zaporednih besedah v povedi in uporabimo poleg ostalih vhodnih parametrov še napoved prejšnjega modela, dobimo model MEMM.
+Pri markovskih modelih maksimalne entropije (maximum entropy Markov models, MEMM) gre za model logistične regresije uporabljen na poseben način. Logistična regresija je klasifikacijski algoritem, ki ni sekvenčen in je tako sam po sebi neprimeren za označevanje zaporedij. Če uporabimo logistično regresijo na zaporednih besedah v povedi in uporabimo poleg ostalih vhodnih parametrov še napoved prejšnjega modela, dobimo model MEMM.
 
 % shema memm
 \begin{figure}
 \centering
 \includegraphics[width=1.0\textwidth]{memm.png}
-\caption{Označevalnik implementiran z modelom maksimalne entropije.}
+\caption{Označevalnik implementiran z modelom maksimalne entropije. Za razliko od označevalnika HMM na sliki \ref{fig:hmm} je tu napoved oznake odvisna tudi od besede, in ne le predhodne oznake.}
 \label{fig:memm}
 \end{figure}
 
-Z uporabo takšnih modelov, lahko preprosteje vključujemo poljubne značilke, kar je pri generativnih modelih, kot je HMM, težje. Pri implementaciji označevalnikov, z uporabo modelov maksimalne entropije vključujemo večje število značilk. Te značilke so običajno sosednje besede in oznake v oknih različnih širin, predpona in končnica besede, prisotnost velikih začetnic, številk, simbolov in podobno.
+Z uporabo takšnih modelov lahko preprosteje vključujemo poljubne značilke, kar je pri generativnih modelih, kot je HMM, težje. Pri implementaciji označevalnikov z uporabo modelov maksimalne entropije vključujemo večje število značilk. Te značilke so običajno sosednje besede in oznake v oknih različnih širin, predpona in končnica besede, prisotnost velikih začetnic, številk, simbolov in podobno.
 
 Najpreprostejši način dekodiranja modelov maksimalne entropije je z uporabo požrešnega dekodirnega algoritma. Ta pristop deluje tako, da s klasifikatorjem napovemo oznake vseh besed iz ene smeri v drugo in pri tem napovedi oznak klasifikatorja posredujemo naslednjim stopnjam. Takšen pristop je hiter, a ponavadi njegova točnost ni zadostna, saj so napovedi oznak na vsakem koraku dokončne in jih klasifikator v kasnejših  korakih ne more popraviti. Ustreznejši postopek dekodiranja je z uporabo Viterbijevega algoritma, kot pri skritih markovskih modelih. Na skici modela (~\ref{fig:memm}) opazimo, da je oznaka odvisna od predhodne oznake in trenutne besede.
 
 
 \subsection*{Dvosmerno označevanje}
-Pomanjkljivost modelov maksimalne entropije in skritih markovskih modelov pri označevanju besedil je v tem, da označuje le v smeri od začetka do konca povedi. To je težava, ker so besede in njihove oznake med sabo odvisne v obeh smereh. V izogib negativnim posledicam označevanja v eno smer se uporabljajo različni pristopi:
+Pomanjkljivost modelov maksimalne entropije in skritih markovskih modelov pri označevanju besedil je, da označujejo le v smeri od začetka do konca povedi. To je težava, ker so besede in njihove oznake med sabo odvisne v obeh smereh. V izogib tega se uporabljajo različni pristopi:
 \begin{itemize}
 	\item Vsak sekvenčni model lahko spremenimo v dvosmerni model z uporabo večkratnih prehodov. Ob prvem prehodu model uporablja samo oznake že označenih besed levo od trenutno označevane besede, v drugem prehodu pa lahko uporablja tudi oznake besed, ki se nahajajo desno od trenutne in so bile označene v prejšnjem prehodu.
 	\item Pristop podoben večkratnim prehodom sta dva prehoda, vsak v svoji smeri. Ker imamo tu opravka z verjetnostnimi modeli lahko izberemo oznake, ki jima model pripiše višje verjetnosti.
-	\item Označevalnik Stanford Tagger CITE (Toutanova et al., 2003). uporablja dvosmerno različico modela maksimalne entropije, ki se imenuje ciklično odvisnostno omrežje (cyclic dependency network	
+	\item Model s cikličnim odvisnostnim omrežjem (cyclic dependency network), pri katerem označevalnik za napovedovanje sočasno uporablja predhodne in naslednje oznake (Toutanova in sod. \cite{toutanova2003}). Ta model je zgrajen iz zaporednih modelov MEMM. Označevalniku Stanford Tagger temelji na modelu cikličnega odvisnostnega omrežja. 
 \end{itemize} 
 
 
-\subsection*{Pogojno verjetnostna polja}
+\subsection*{Pogojno naključna polja}
 \label{pos:alg:crf}
-Modeli pogojno verjetnostnih polj (Conditional random fields, CRF) so neusmerjeni verjetnostni grafični modeli in že v svoji osnovi odpravljajo težavo enosmernega označevanja REF. Ti modeli dosegajo najboljše rezultate pri različnih nalogah označevanja zaporedij.
+Modeli pogojno naključnih polj (Conditional random fields, CRF) so neusmerjeni verjetnostni grafični modeli in že v svoji osnovi odpravljajo težavo enosmernega označevanja \cite{jurafsky_martin_2014}. Ti modeli dosegajo dobre rezultate pri različnih nalogah označevanja zaporedij.
 
-Modeli CRF normalizirajo verjetnosti za celotno zaporedje oznak in ne lokalno, kot modeli MEMM. Prednost tega je, da modeli CRF niso pristranski k nekaterim oznakam. Modeli CRF so kompleksnejši od modelov HMM in MEMM, zato njihovo učenje traja dlje časa.
+Modeli CRF normalizirajo verjetnosti za celotno zaporedje oznak in ne lokalno, kot modeli MEMM. Prednost tega je, da modeli CRF niso pristranski do nekaterih oznak. Modeli CRF so kompleksnejši od modelov HMM in MEMM, zato njihovo učenje traja dlje časa.
 
 %skica
 \begin{figure}
@@ -238,14 +241,14 @@ Modeli CRF normalizirajo verjetnosti za celotno zaporedje oznak in ne lokalno, k
 
 \section{Oblikoskladenjsko označevanje slovenščine}
 \label{sec:pos:slo}
-Težavnost opisanega problema se med različnimi naravnimi jeziki razlikuje. Na težavnost pomembno vpliva število možnih oznak v jeziku. Teh v slovenskem jeziku poznamo 1900 (REF MULTEXT-East V5), medtem ko nabori oznak za angleški jezik navadno vsebujejo med 45 in 100 različnih oznak (REF). Razlog za veliko število možnih oznak v slovenskem jeziku je veliko število različnih oblik v katerih zapisujemo besede. Dve besedi z isto osnovno obliko, z eno različno lastnostjo imata običajno v slovenščini različna zapisa.
+Težavnost oblikoskladenjskega označevanja se med različnimi naravnimi jeziki razlikuje. Nanjo pomembno vpliva število možnih oznak v jeziku. V naboru MULTEXT-East za slovenski jezik \cite{multext-east} je 1900 oznak, medtem ko nabori oznak za angleški jezik navadno vsebujejo med 45 in 100 različnih oznak. Razlog za veliko število možnih oznak v slovenskem jeziku je veliko število besednih oblik. Dve besedi z isto osnovno obliko a z eno različno lastnostjo imata običajno v slovenščini različna zapisa.
 
-Jezikom, pri katerih se pojavljajo omenjene lastnosti, pravimo morfološko bogati jeziki (REF jurafsky). Med te jezike, poleg slovenščine, uvrščamo jezike kot so turščina, madžarščina in češčina.
+Jezikom, pri katerih se pojavljajo omenjene lastnosti, pravimo morfološko bogati jeziki \cite{jurafsky_martin_2014}. Med te jezike, poleg slovenščine, uvrščamo jezike, kot so turščina, madžarščina in češčina.
 
-Oblikoskladenjske oznake v morfološko bogatih jezikih nosijo več informacij kot oznake v jezikih kakršen je angleški. V morfološko bogatih jezikih poznamo koncept sklona, časa, števila, osebe in drugih lastnosti, ki so značilne samo za določene besedne vrste. Oblikoskladenjske oznake v takšnih jezikih so zaporedja morfoloških oznak in ne enotne, primitivne oznake.
+Oblikoskladenjske oznake v morfološko bogatih jezikih nosijo več informacij kot oznake v jezikih, kakršen je angleški. V morfološko bogatih jezikih poznamo koncept sklona, časa, števila, osebe in drugih lastnosti, ki so značilne samo za določene besedne vrste. Oblikoskladenjske oznake v takšnih jezikih so zaporedja morfoloških oznak in ne enotne, primitivne oznake.
 
 % Specifikacije JOS
-V okviru pričujočega magistrskega dela smo uporabljali oblikoskladenjske oznake, določene v specifikaciji MULTEXT-East V5. Ta specifikacija uporablja trinajst besednih vrst: samostalnik, glagol, pridevnik, prislov, zaimek, števnik, predlog, veznik, členek, medmet, okrajšava, neuvrščeno in ločilo.
+V okviru našega dela smo uporabljali oblikoskladenjske oznake, določene v specifikaciji MULTEXT-East V5. Ta specifikacija uporablja trinajst besednih vrst: samostalnik, glagol, pridevnik, prislov, zaimek, števnik, predlog, veznik, členek, medmet, okrajšava, neuvrščeno in ločilo.
 
 V tabeli ~\ref{tbl:besednevrste} so za slovenščino po MULTEXT-East V5 navedene besedne vrste, število lastnosti za posamezno besedno vrstno in število vseh veljavnih kombinacij lastnosti.
 
@@ -268,13 +271,14 @@ Medmet & 0 & 1 \\
 Okrajšava & 0 & 1 \\
 Neuvrščeno & 1 & 8 \\
 Ločilo & 0 & 1 \\ \hline
+Skupaj &  & 1900 \\ \hline
         \end{tabular}
     \end{center}
 \label{tbl:besednevrste}
 \end{table}
 
 % primer prostega besednega reda in zakaj je to slabo za HMM
-Lastnost slovenščine, ki dodatno vpliva na težavnost označevanja je prost besedni red. Zaradi te lastnosti se lahko besede pojavljajo na različnih mestih v povedi, ne da bi spremenile pomen povedi. Povedi v spodnjem primeru so sestavljene iz istih besed, spremenili smo le njihov vrstni red.
+Lastnost slovenščine, ki dodatno vpliva na težavnost označevanja, je prost besedni red. Zaradi te lastnosti se lahko besede pojavljajo na različnih mestih v povedi, ne da bi spremenile pomen povedi. Povedi v spodnjem primeru so sestavljene iz istih besed, spremenili smo le njihov vrstni red.
 
 \begin{itemize}
 \item Vesna na vrtu nabira rože.
@@ -282,16 +286,15 @@ Lastnost slovenščine, ki dodatno vpliva na težavnost označevanja je prost be
 \item Rože na vrtu nabira Vesna.
 \end{itemize}
 
-Vse povedi so sintaktično pravilne in nosijo isti pomen. Razlika je le v poudarku. Prost vrstni red besed uvede dodatno težavnost za jezikovne modele, saj je zaradi te lastnosti težje prepoznati vzorce, ki se pojavljajo v jeziku.
+Vse povedi so sintaktično pravilne in nosijo isti pomen. Razlika je le v poudarku. Prost vrstni red besed uvede dodatno težavnost za jezikovne modele in tudi za oblikoskladenjske označevalnike, saj je zaradi te lastnosti težje prepoznati vzorce, ki se pojavljajo v jeziku.
 
 \section{Obstoječe rešitve}
 \label{sec:pos:solutions}
-Najuspešnejši obstoječi izvedbi označevalnika za slovenski jezik sta označevalnika Obeliks in Reldi. Temeljita na algoritmih strojnega učenja, ki smo jih opisali v podpoglavju ~\ref{sec:pos:alg}.
 
-\subsection*{Grčar, Krek, Dobrovoljc (2012)\cite{Grcar2012}}
-V okviru projekta Sporazumevanje v slovenskem jeziku CITE je skupina raziskovalcev razvila orodje imenovano Obeliks. Obeliks ni samo oblikoskladenjski označevalnik. Vključuje tudi orodja za segmentacijo, tokenizacijo in lematizacijo besedila. Segmentacija poskrbi za razdelitev vhodnega besedila na enote za označevanje, ki so običajno povedi. Tokenizacija poišče pojavnice. Pojavnice so največkrat ločila in besede. Lematizacija določa besedam njihovo osnovno obliko.
+\subsection*{Obeliks}
+V okviru projekta Sporazumevanje v slovenskem jeziku je skupina raziskovalcev razvila orodje imenovano Obeliks \cite{Grcar2012}. Obeliks ni samo oblikoskladenjski označevalnik, saj vključuje tudi orodja za segmentacijo, tokenizacijo in lematizacijo besedila. Segmentacija poskrbi za razdelitev vhodnega besedila na enote za označevanje, ki so običajno povedi. Tokenizacija poišče pojavnice, ki so največkrat ločila in besede. Lematizacija določa besedam njihove osnovne oblike.
 
-Za označevanje besed so uporabili model maksimalne entropije (~\ref{postagging:mme}. Model so naučili na jezikovnem korpusu ssj500k \cite{ssj500kv13}. Poleg tipičnih značilk, kot so sosednje besede in oznake prejšnjih besed, so uporabili še potencialne oznake iz drevesa končnic, zgrajenega na podlagi učnega korpusa. Pri napovedovanju besedne vrste je označevalnik dosegel 98,3 \% točnost, celotne oznake pa je določal z 91,34 \% točnostjo.
+Za označevanje besed so uporabili model maksimalne entropije (glej razdelek ~\ref{postagging:mme}). Model so naučili na jezikovnem korpusu ssj500k \cite{ssj500kv13}. Poleg tipičnih značilk, kot so sosednje besede in oznake prejšnjih besed, so uporabili še potencialne oznake iz drevesa končnic, zgrajenega na podlagi učnega korpusa. Pri napovedovanju besedne vrste je označevalnik dosegel 98,3 \% točnost, celotne oznake pa je določal z 91,34 \% točnostjo.
 
 \begin{figure}
 \centering
@@ -299,47 +302,47 @@ Za označevanje besed so uporabili model maksimalne entropije (~\ref{postagging:
 \caption{Shema delovanja orodja Obeliks in njegovih komponent.}
 \end{figure}
 
-\subsection*{Ljubešić, Erjavec (2016)\cite{Ljubesic2016}}
-Avtorji tega dela so razvili nov označevalnik, osnovan na modelu pogojno naključnih polj (~\ref{pos:alg:crf}). Njihov označevalnik se imenuje Reldi. Za osnovo so uporabili označevalnik Obeliks. Tako kot označevalnik Obeliks, tudi Reldi za dodatne značilke uporablja drevo končnic. Svoj označevalnik so posebej optimizirali za označevanje neznanih in delno neznanih besed. Označevanje neznanih besed je del arhitekture označevalnika in tega ne rešuje dodaten proces, kot je bilo običajno pri označevalnikih za morfološko bogate jezike.
+\subsection*{Reldi}
+Ljubešić in Erjavec \cite{Collobert2011} sta razvila nov označevalnik Reldi, osnovan na modelu pogojno naključnih polj (glej razdelek \ref{pos:alg:crf}). Za osnovo so uporabili označevalnik Obeliks. Tako kot označevalnik Obeliks, tudi Reldi za dodatne značilke uporablja drevo končnic. Svoj označevalnik so posebej optimizirali za označevanje neznanih in delno neznanih besed. Označevanje neznanih besed je del arhitekture označevalnika in tega ne rešuje dodaten proces, kot je bilo običajno pri označevalnikih za morfološko bogate jezike.
 
-Poročajo o 98,94\% točnosti pri napovedovanju besedne vrste, za celotne oznake pa 94,27\%. 
+Avtorji poročajo o 98,94\% točnosti pri napovedovanju besedne vrste, za celotne oznake pa o 94,27\% klasifikacijski točnosti.
 
 %----------------------------------------------------------------
 % Poglavje (Chapter) 3
 %----------------------------------------------------------------
 \chapter{Globoke nevronske mreže za besedila}
 \label{ch:nn}
-V prejšnjem poglavju smo predstavili nekatere algoritmične pristope k oblikoskladenjskem označevanju. Za reševanje te naloge, pa tudi drugih s področja obdelave naravnega jezika, postajajo v zadnjih letih vedno pogostejši pristopi z uporabo nevronskih mrež.
+V prejšnjem poglavju smo predstavili klasične algoritmične pristope k oblikoskladenjskemu označevanju. Za reševanje te naloge, pa tudi drugih s področja obdelave naravnega jezika, postajajo v zadnjih letih vedno pogostejši pristopi z uporabo globokih nevronskih mrež.
 
-V tem poglavju bomo predstavili vrste nevronskih mrež, ki se pogosto uporabljajo na področju obdelave naravnega jezika. Te vrste smo uporabili tudi mi pri implementaciji naše rešitve. Na koncu poglavja predstavimo tudi prispevke s tega področja, ki so vplivali na našo rešitev.
+Predstavili bomo nevronske mreže, ki se pogosto uporabljajo na področju obdelave naravnega jezika in ki smo jih uporabili tudi mi pri implementaciji naše rešitve. Na koncu poglavja predstavimo tudi nekatera dela, ki so vplivala na našo rešitev.
 
 \section{Konvolucijske nevronske mreže}
 \label{sec:nn:cnn}
-Konvolucijske nevronske mreže so posebna vrsta nevronskih mrež, namenjene obdelavi podatkov razporejenih v vnaprej znano strukturo. Slike, kjer se konvolucijske nevronske mreže pogosto uporabljajo, imajo slikovne točke razporejene v dvodimenzionalno strukturo. Besedila navadno opisujemo z enodimenzionalo strukturo, saj imamo opravka z enodimenzionalnimi zaporedji besed ali znakov. Konvolucijske nevronske mreže se imenujejo po matematični operaciji konvoluciji, ki jo uporabljajo vsaj na enem nivoju, namesto običajnega matričnega množenja.
+Konvolucijske nevronske mreže so vrsta nevronskih mrež, namenjenih obdelavi podatkov, razporejenih v vnaprej znano strukturo. Slike, kjer se konvolucijske nevronske mreže pogosto uporabljajo, imajo slikovne točke razporejene v dvodimenzionalno strukturo. Besedila navadno opisujemo z enodimenzionalo strukturo, saj imamo opravka z enodimenzionalnimi zaporedji besed ali znakov. Konvolucijske nevronske mreže se imenujejo po matematični operaciji konvoluciji, ki jo uporabljajo vsaj na enem nivoju, namesto običajnega matričnega množenja.
 
 \subsection*{Konvolucija}
-Konvolucijo opisuje spodnja enačba (\ref{eq:cnn:conv}).V kontekstu, ko je $t$ časovna komponenta, lahko konvolucijo opišemo kot uteženo povprečje funkcije $x$, v trenutku $t$, utež pa dobimo iz funkcije $w(-a)$, z zamikom $t$. S spremembo parametra $t$ se spreminja tudi vrednost uteži $w(t-a)$.
+Konvolucijo opisuje enačba (\ref{eq:cnn:conv}).V kontekstu, ko je $t$ časovna komponenta, lahko konvolucijo opišemo kot uteženo povprečje funkcije $x$ v trenutku $t$, utež pa dobimo iz funkcije $w(-a)$ z zamikom $t$. S spremembo parametra $t$ se spreminja tudi vrednost uteži $w(t-a)$.
 
 \begin{equation}
 \label{eq:cnn:conv}
-s(t) = \int x(a)w(t-a)da
+s(t) = \int_{-\infty}^{\infty} x(a)w(t-a)da
 \end{equation}
 
-Čeprav smo vhodni parameter poimenovali $t$, ni potrebno, da le ta opisuje čas. Čas bi bil primeren parameter pri modeliranju časovnih vrst, pri besedilih pa je to položaj v besedilu.
+Čeprav smo vhodni parameter poimenovali $t$, ni potrebno, da le-ta opisuje čas. Čas bi bil primeren parameter pri modeliranju časovnih vrst, pri besedilih pa je to položaj v besedilu.
 
 Operacijo konvolucije običajno zapisujemo s simbolom $*$ in tako lahko zgornjo enačbo zapišemo kot:
 \begin{equation}
 s(t) = (x * w)(t)
 \end{equation}
 
-Zgornja definicija konvolucije predvideva, da je časovna spremenljivka $t$ zvezna, kar pa ne drži, kadar imamo opravka s podatki v nevronskih mrežah, saj podatki prihajajo v diskretnih enotah, kot so slikovne točke, besede, ali črke. Tudi pri obdelavi časovnih vrst imamo v resnici opravka z diskretnimi podatki. Za modeliranje z nevronskimi mrežami je ustreznejša definicija, ki obravnava spremenljivko $t$ kot diskretno:
+Zgornja definicija konvolucije predvideva, da je časovna spremenljivka $t$ zvezna, kar pa ne drži, kadar imamo opravka s podatki v nevronskih mrežah, saj podatki prihajajo v diskretnih enotah, kot so slikovne točke, besede, ali črke. Tudi pri obdelavi časovnih vrst imamo v resnici opravka z diskretnimi podatki. Za modeliranje z nevronskimi mrežami je zato ustreznejša definicija, ki spremenljivko $t$ obravnava kot diskretno:
 \begin{equation}
 s(t)=(x*w)(t) =  \sum_{a=-\infty }^{\infty } x(a)w(t-a)
 \end{equation}
 
-V kontekstu nevronskih mrež, pravimo argumentu $x(a)$ vhod, drugemu argumentu $w(t-a)$ pa jedro. V praksi so podatki na vhodu običajno v obliki večdimenzionalnih polj, ki jih imenujemo tenzorji. Jedro je prav tako tenzor parametrov, ki jih nastavi algoritem strojnega učenja.
+V kontekstu nevronskih mrež pravimo argumentu $x(a)$ vhod, argumentu $w(t-a)$ pa jedro. V praksi so podatki na vhodu običajno v obliki večdimenzionalnih polj, ki jih imenujemo tenzorji. Jedro je prav tako tenzor uteži, ki se jih nauči algoritem strojnega učenja.
 
-Kadar se konvolucija uporablja na dvo ali večdimenzionalnih podatkih, uporabimo razširjeno definicijo konvolucije, ki deluje na več oseh. Naslednja enačba (\ref{eq:cnn:2d}) definira konvolucijo na dveh oseh. Vhod I in jedro K sta dvodimenzionalni polji.
+Kadar se konvolucija uporablja na dvo ali večdimenzionalnih podatkih, uporabimo razširjeno definicijo konvolucije, ki deluje na več oseh. Enačba (\ref{eq:cnn:2d}) definira konvolucijo na dveh oseh. Vhod I in jedro K sta dvodimenzionalni polji.
 
 \begin{equation}
 \label{eq:cnn:2d}
@@ -348,11 +351,11 @@ S(i, j)=(I*K)(i,j) =  \sum_{m}\sum_{n}I(m,n)K(i-m,j-n)
 
 \subsection*{Lastnosti konvolucijskih nevronskih mrež}
 
-Prehodi med sloji v nevronskih mrežah so običajno predstavljeni z matričnim množenjem. Elementi matrike so uteži povezav med posameznimi vhodnimi in izhodnimi enotami. V takšnih gosto povezanih nevronskih mrežah je vsak izhod povezan z vsakim izhodom. Konvolucijske nevronske mreže se razlikujejo od običajnega pristopa v tem, da imajo redkejše povezave. Ta lastnost izhaja iz tega, da je jedro konvolucije največkrat manjše od vhoda. Takšen pristop ima pri določenih nalogah številne prednosti pred klasičnim:
+Prehodi med sloji v nevronskih mrežah so običajno predstavljeni z matričnim množenjem. Elementi matrike so uteži povezav med posameznimi vhodnimi in izhodnimi enotami. V takšnih gosto povezanih nevronskih mrežah je vsak izhod povezan z vsakim izhodom. Konvolucijske nevronske mreže se razlikujejo od tega pristopa v tem, da imajo redkejše povezave. Ta lastnost izhaja iz tega, da je jedro konvolucije največkrat manjše od vhoda. Takšen pristop ima pri določenih nalogah številne prednosti pred klasičnim:
 \begin{itemize}
 \item Manjša prostorska zahtevnost, ki izvira iz tega, da ni potrebno shranjevati uteži povezav med vsemi vhodi in izhodi.
 \item Manjša računska zahtevnost učenja. Za izračun vrednosti na izhodih je potrebnih manj računskih operacij.
-\item Več različnih funkcij modela si lahko deli isti parameter. Pri običajnih nevronskih mrežah se vsak parameter iz matrike uteži uporabi natanko enkrat, pri konvolucijskih nevronskih mrežah pa se vsak element jedra uporabi na vsakem elementu vhoda.
+\item Več različnih funkcij modela si lahko deli isti parameter. Pri običajnih nevronskih mrežah se vsak parameter iz matrike uteži uporabi natanko enkrat, pri konvolucijskih nevronskih mrežah pa se vsak element jedra uporabi na vseh elementih vhoda.
 \end{itemize}
 
 \subsection*{Združevanje}
@@ -364,30 +367,30 @@ Sloj v konvolucijski nevronski mreži je običajno sestavljen iz treh nivojev:
 \item Na zadnjem nivoju uporabimo združavalno funkcijo.
 \end{enumerate}
 
-Združevalna funkcija transformira izhode mreže na nekem mestu z opisno statistiko izhodov. Združevanje z maksimumom tako zamenja izhod detektorjev z najvišjo vrednostjo znotraj nekega območja. Druge pogoste funkcije združevanja so še povprečje izhodov, norma $L^2$ in uteženo povprečje okrog središčnega izhoda. Z združevanjem dosežemo zmanjševanje kompleksnosti modela in tako olajšamo učenje. 
+Združevalna funkcija transformira izhode mreže na nekem mestu z opisno statistiko izhodov. Združevanje z maksimumom zamenja izhod detektorjev z najvišjo vrednostjo znotraj nekega območja. Druge pogoste funkcije združevanja so še povprečje izhodov, norma $L^2$ in uteženo povprečje okrog središčnega izhoda. Z združevanjem dosežemo zmanjševanje kompleksnosti modela in tako olajšamo učenje. 
 
-Ker funkcija združevanja povzema celotno soseščino izhodov, je včasih smiselno uporabiti manj združevalnih enot, kot je enot v nivoju detektorjev. Pri takšnem pristopu združevalne enote povzemajo območja ki so si narazen več kot eno mest. V primeru na sliki (\ref{fig:cnn:maxpool}) je uporabljen korak $k=2$.
+Ker funkcija združevanja povzema celotno skupino izhodov, je včasih smiselno uporabiti manj združevalnih enot, kot je enot v nivoju detektorjev. Pri takšnem pristopu združevalne enote povzemajo območja, ki so več mest narazen. V primeru na sliki (\ref{fig:cnn:maxpool}) je uporabljen korak $k=2$.
 
 Slabost, ki se pojavi pri uporabi večkratnega združevanja je, da se izgubi informacija o mestu pojavitve prepoznane lastnosti. Prav tako se lahko izgubi informacija o odvisnostih med posameznimi lastnostmi.
 
 \begin{figure}
-\label{fig:cnn:maxpool}
 \centering
 \includegraphics[width=1.0\textwidth]{maxpooling.png}
-\caption{Primer združevanja s korakom $k=2$ in širino okna $3$. \cite{Goodfellow-et-al-2016}}
+\caption{Primer združevanja z maksimumom in korakom $k=2$ ter širino okna $3$ \cite{Goodfellow-et-al-2016}.}
+\label{fig:cnn:maxpool}
 \end{figure}
 
 
 \section{Rekurentne nevronske mreže}
 \label{sec:nn:rnn}
 
-Rekurentne nevronske mreže (RNN) so družina nevronskih mrež, ki se uporablja za obdelavo podatkov v zaporedjih. Prednost rekurentnih nevronskih mrež, pomembna za obdelavo zaporedij, je v tem da lahko hrani informacijo dlje časa. Zaradi te lastnosti lahko obdeluje daljša zaporedje, kot bi bilo praktično pri običajnih nevronskih mrežah. Večina rekurentnih nevronskih mrež lahko obdeluje podatke v zaporedjih različnih dolžin.
+Rekurentne nevronske mreže (RNN) se uporabljajo za obdelavo podatkov v zaporedjih. Prednost rekurentnih nevronskih mrež, pomembna za obdelavo zaporedij, je, da lahko hrani informacijo za več mest nazaj. Zaradi te lastnosti lahko obdeluje daljša zaporedje, kot bi bilo praktično pri običajnih nevronskih mrežah. Večina rekurentnih nevronskih mrež lahko obdeluje podatke v zaporedjih različnih dolžin.
 
-V primeru, da bi se obdelave zaporedij lotili z običajnimi nevronskimi mrežami, bi uporabili pristop z drsečim kontekstnim oknom določene širine. Slabost takšnega pristopa je omejen kontekst za zajem informacij, saj pojavnice zunaj kontekstnega okna na odločitve modela nimajo vpliva. Ta slabost je še izrazitejša pri jezikih, kjer so med seboj odvisne besede na različnih koncih povedi. Druga slabost je, da se model težje nauči vzorcev kot so besedne zveze.
+V primeru, da bi se obdelave zaporedij lotili z običajnimi nevronskimi mrežami, bi uporabili pristop z drsečim kontekstnim oknom določene širine. Slabost takšnega pristopa je omejen kontekst za zajem informacij, saj pojavnice zunaj kontekstnega okna na odločitve modela nimajo vpliva. Ta slabost je še izrazitejša pri jezikih, kjer so med seboj odvisne besede na različnih koncih povedi. Druga slabost je, da se model težje nauči vzorcev, kot so besedne zveze.
 
-Rekurentna nevronska mreža je vsaka nevronska mreža, ki vsebuje usmerjen cikel. V primeru ciklične povezave je enota posredno ali neposredno povezana s svojim izhodom na svoj vhod. Vrednost aktivacije rekurentne enote pri nekem koraku ni odvisna samo od vhoda, ampak tudi od vrednosti aktivacije v prejšnjem koraku. Rekurentne povezave omogočajo modeliranje časovne komponente zaporedij.
+Rekurentna nevronska mreža je vsaka nevronska mreža, ki vsebuje usmerjen cikel. V primeru ciklične povezave je enota posredno ali neposredno povezana iz svojega izhoda na svoj vhod. Vrednost aktivacije rekurentne enote pri nekem koraku ni odvisna samo od vhoda, ampak tudi od vrednosti aktivacije v prejšnjem koraku. Rekurentne povezave omogočajo modeliranje časovne komponente zaporedij.
 
-Obdelava niza podatkov z mrežami RNN poteka tako, da se elemente niza po vrsti vstavlja v mrežo. Rekurentna povezava daje način pomnjenja z uvajanjem informacije iz prejšnjega koraka. Takšna arhitektura ni omejena samo na prejšnji korak, saj vsi predhodni koraki vplivajo na trenutno stanje.
+Obdelava niza podatkov z mrežami RNN poteka tako, da se elemente niza po vrsti vstavlja v mrežo. Rekurentna povezava omogoča pomnjenje z uvajanjem informacije iz prejšnjega koraka. Takšna arhitektura ni omejena samo na prejšnji korak, saj vsi predhodni koraki vplivajo na trenutno stanje.
 
 Glavna razlika med navadnimi nevronskimi mrežami in mrežami RNN je v dodatnih povezavah med skritim slojem v trenutnem korakom in skritim slojem prejšnjega koraka. Te povezave imajo tudi svoje uteži. Kot pri običajnih utežeh, se tudi uteži povezav med skritimi sloji učijo z vzvratnim razširjanjem napak.
 
@@ -396,44 +399,44 @@ Pojemajoči gradient je težava, ki se pojavlja pri učenju nevronskih mrež z g
 
 
 \subsection*{Nevronske mreže LSTM}
-Tipično se pri rekurentnih nevronskih mrežah informacija zakodirana v skritih stanjih najbolj navezuje na zadnji viden del vhodnega niza. Iz tega razloga se pri nalogah, ki zahtevajo uporabo informacij oddaljenih od trenutnega mesta obdelave pojavljajo težave. Pri obdelavi naravnega jezika, se pogosto pojavi potreba po poznavanju daljšega konteksta. Primer, ki se navezuje na temo pričujočega dela so odvisnosti med besedami, ki se nahajajo na različnih koncih dolge povedi.
+\label{sec:nn:lstm}
+Tipično se pri rekurentnih nevronskih mrežah informacija zakodirana v skritih stanjih najbolj navezuje na zadnji obdelan del vhodnega niza. Iz tega razloga se pri nalogah, ki zahtevajo uporabo informacij oddaljenih od trenutnega mesta pojavljajo težave. Pri obdelavi naravnega jezika, se pogosto pojavi potreba po poznavanju daljšega konteksta. Primer, ki se navezuje na temo tega dela so odvisnosti med besedami, ki se nahajajo na različnih koncih dolge povedi.
 
 Eden izmed razlogov za nezmožnost prenosa pomembne informacije je v tem, da sloj v rekurentni nevronski mreži opravlja dve nalogi hkrati. Prva naloga je priprava informacije, ki je koristna v trenutnem kontekstu. Druga naloga sloja pa je posodobitev in prenos informacije naprej, da je uporabna v prihodnjem kontekstu.
 
-Druga težava, ki jo imajo rekurentne nevronske mreže pri učenju, je problem pojemajočega gradienta. Ta problem postene z daljšimi vhodnimi nizi še bolj izrazit.
+Druga težava, ki jo imajo rekurentne nevronske mreže pri učenju, je problem pojemajočega gradienta. Ta problem postane z daljšimi vhodnimi nizi še bolj izrazit.
 
-Z namenom omejevanja teh težav so bili razviti pristopi, ki omogočajo ohranjanje informacije v daljših časovno odvisnih nizih. Ti pristopi obravnavajo kontekst spominsko enoto, ki jo je potrebno upravljati. Spominsko enoto se pri teh pristopih navadno upravlja s pozabljanjem in pomnjenjem.
+Z namenom omejevanja teh težav so bili razviti pristopi, ki omogočajo ohranjanje informacije v daljših časovno odvisnih nizih. Ti pristopi obravnavajo kontekst s spominsko enoto, ki se jo navadno upravlja s pozabljanjem in pomnjenjem.
 
-Nevronske mreže z dolgim kratkoročnim spominom (Long short-term memory, LSTM), razpolagajo s kontekstom z optimizacijo dveh nalog. Prva je pomnjenje informacij, za katere je verjetno, da bodo pomembne pri prihodnjih odločitvah. Druga naloga pa je pozabljanje informacij, ki niso več potrebne. Nadzorovanje konteksta ni zakodirano v nevronske mreže LSTM, ampak se tega naučijo same.
+Nevronske mreže z dolgim kratkoročnim spominom (Long short-term memory, LSTM) razpolagajo s kontekstom z optimizacijo dveh nalog. Prva je pomnjenje informacij, za katere je verjetno, da bodo pomembne pri prihodnjih odločitvah. Druga naloga pa je pozabljanje informacij, ki niso več uporabne. Nadzorovanje konteksta ni zakodirano v nevronske mreže LSTM, ampak se tega naučijo z optimizacijskim algoritmom.
 
-Nevronske mreže LSTM imajo poleg zunanje rekurentnosti, ki je značilna tudi za navadne mreže RNN, tudi notranjo rekurentnost. Na zunaj je enota mreže LSTM ista kot enota navadne mreže RNN, saj ima iste vhode in izhode. V svoji notranjosti ima dodatno kompleksnost, zaradi česar ima tudi več parametrov. Notranja enota stanja ima linearno povezavo na sebe, zaradi katere se pojavi spominski učinek. Utež omenjene rekurentne povezave nadzirajo vrata, ki jim pravimo vrata pozabe. Vrata pozabe nadzirajo količino informacij, ki se na vsakem koraku ohrani. Na vhodu so še vhodna vrata, ki nadzirajo količino informacij, ki v trenutnem koraku vstopijo v celico in preprečujejo pomnjenje nepomembnih informacij. Izhodna vrata, na izhodu celice skrbijo za nadzor količine informacij ki se prenesejo v naslednji korak.
+Nevronske mreže LSTM imajo poleg zunanje rekurentnosti, ki je prisotna pri vseh mrežah RNN, tudi notranjo rekurentnost. Na zunaj je enota mreže LSTM ista kot enota navadne mreže RNN, saj ima iste vhode in izhode. V svoji notranjosti ima dodatno kompleksnost, zaradi česar ima tudi več parametrov. Notranja enota stanja ima linearno povezavo na sebe, zaradi katere se pojavi spominski učinek, saj se pri linearni povezavi informacija ohranja. Utež omenjene rekurentne povezave nadzirajo vrata, ki jim pravimo vrata pozabe. Vrata pozabe nadzirajo količino informacij, ki se na vsakem koraku ohrani. Na vhodu so še vhodna vrata, ki nadzirajo količino informacij, ki v trenutnem koraku vstopijo v celico in preprečujejo pomnjenje nepomembnih informacij. Izhodna vrata, na izhodu celice nadzirajo količino informacij ki se prenesejo v naslednji korak.
 
 
-\label{sec:nn:lstm}
 
 \section{Hitrocestne nevronske mreže}
 \label{highway}
 
-Družino nevronskih mrež, ki jo zaznamuje uporaba vrat za nadzor pretoka informacij skozi model in omogoča uporabo velikega števila slojev imenujem hitrocestne nevronske mreže \cite{Srivastava2015}.
+Družino nevronskih mrež, ki jo zaznamuje uporaba vrat za nadzor pretoka informacij skozi model in omogoča uporabo velikega števila slojev imenujemo hitrocestne nevronske mreže \cite{Srivastava2015}.
 
-Dejavnik, ki ključno vpliva na moč nevronske mreže je globina modela. Globina pomeni število slojev v nevronski mreži. Večja globina modelov je povezana z boljšo sposobnostjo aproksimacije določenih vrst funkcij.
+Dejavnik, ki ključno vpliva na moč nevronske mreže je globina modela, ki pomeni število slojev v nevronski mreži. Večja globina modelov je povezana z boljšo sposobnostjo aproksimacije določenih vrst funkcij.
 
-Težava, ki se začne pojavljati z dodajnajem večjega števila slojev je oslabljeno razširjanje aktivacij in gradientov. Pristopi s katerimi se ta problem rešuje vključujejo boljše optimizacijske algoritme in nastavljanje začetnih uteži.
+Težava, ki se začne pojavljati z dodajanjem večjega števila slojev je oslabljeno razširjanje aktivacij in gradientov. Pristopi, s katerimi se ta problem rešuje, vključujejo boljše optimizacijske algoritme in nastavljanje začetnih uteži.
 
-Drugačen pristop k povečanju števila slojev nevronske mreže brez omenjenih slabosti so hitrocestne nevronske mreže. Ta družina nevronskih mrež uporablja mehanizem vrat za nadzor pretoka informacij skozi enote. Takšen mehanizem omogoča tvorbo poti skozi katere lahko informacija potuje skozi več slojev brez slabljenja. Te poti se imenujejo hitre ceste.
+Drugačen pristop k povečanju števila slojev nevronske mreže brez omenjenih slabosti so hitrocestne nevronske mreže. Ta družina nevronskih mrež uporablja mehanizem vrat za nadzor pretoka informacij skozi enote. Takšen mehanizem omogoča tvorbo poti, skozi katere lahko informacija potuje čez več slojev brez slabljenja. Te poti se imenujejo hitre ceste (angleško highways).
 
-Prednost takšnega pristopa je v tem, da ob velikemu številu slojev omogoča optimizacijo s stohastičnim gradientnim spustom (SGD), za razliko od navadnih nevronskih mrež, kjer ob velikem številu slojev SGD deluje slabo.
+Prednost takšnega pristopa je v tem, da pri velikem številu slojev omogoča optimizacijo s stohastičnim gradientnim spustom (SGD), za razliko od navadnih nevronskih mrež, kjer ob velikem številu slojev SGD deluje slabo.
 
-Avtorji članka Highway Networks \cite{Srivastava2015} so v svojih eksperimentih uporabili SGD na hitrocestnih nevronskih mrežah do globine 900 slojev. V primerjavi z običajnimi tesno povezanimi nevronskimi mrežami so pokazali, da se slednje tudi ob izboljšavi z normalizirano inicializacijo uteži opazno slabijo, medtem ko na hitrocestne mreže globina ne vpliva.
+Avtorji članka Highway Networks \cite{Srivastava2015} so v svojih eksperimentih uporabili SGD na hitrocestnih nevronskih mrežah do globine 900 slojev. V primerjavi z običajnimi polno povezanimi nevronskimi mrežami so pokazali, da se slednje tudi ob izboljšavi z normalizirano inicializacijo uteži opazno slabijo, medtem ko na hitrocestne mreže globina ne vpliva.
 
-Pri običajni nevronski mreži lahko izhode nekega sloja opišemo z enačbo \ref{eq:highway1}, v kateri je $y$ vektor izhodov sloja, $x$ vektor vhodov, $H$ je nelinearna preslikava, $W_H$ pa so parametri preslikave $H$.
+Pri običajni nevronski mreži lahko izhode nekega sloja opišemo z enačbo (\ref{eq:highway1}), v kateri je $y$ vektor izhodov sloja, $x$ vektor vhodov, $H$ je nelinearna preslikava, $W_H$ pa so parametri preslikave $H$.
 
 \begin{equation}
 \label{eq:highway1}
 y=H(x, W_H)
 \end{equation}
 
-$H$ je navadno afina preslikava, ki ji sledi nelinearna aktivacijska funkcija.
+$H$ je navadno preslikava, ki ji sledi nelinearna aktivacijska funkcija.
 
 Sloji v hitrocestni nevronski mreži uvedejo še dve nelinearni preslikavi $T(x, W_T)$ in $C(x, W_C)$:
 
@@ -442,56 +445,54 @@ Sloji v hitrocestni nevronski mreži uvedejo še dve nelinearni preslikavi $T(x,
 y=H(x, W_H) \cdot T(x, W_T) + x \cdot C(x,W_C)
 \end{equation}
 
-Preslikavo $T$ imenujemo vrata preslikave, $C$ pa vrata prenosa. Poimenovanje izhaja iz dejstva, da ta vrata uravnavajo delež informacije, ki se nelinearno preslika in delež, ki je prenešen naprej.
+Preslikavo $T$ imenujemo vrata preslikave (angleško transform), $C$ pa vrata prenosa (angleško carry). Poimenovanje izhaja iz dejstva, da ta vrata uravnavajo delež informacije, ki se nelinearno preslika, in delež, ki je prenešen naprej.
 
 \section{Rešitve sorodnih problemov z uporabo nevronskih mrež}
 \label{sec:nn:solutions}
 
-V preostanku poglavja predstavimo nekatere prispevke s področja modeliranja naravnega jezika z globokimi nevronskimi mrežami. Nekatere od rešitev namesto predstavitev besedila na nivoju besed uporabljajo predstavitve na nivoju znakov, ali pa združujejo oba pristopa. Glavni prednosti pristopa s predstavitvijo besedila na nivoju znakov sta:
+V preostanku poglavja predstavimo nekatere prispevke s področja modeliranja naravnega jezika z globokimi nevronskimi mrežami, ki so vplivali na naše delo. Nekatere od rešitev namesto predstavitev besedila na nivoju besed uporabljajo predstavitve na nivoju znakov ali pa združujejo oba pristopa. Glavni prednosti pristopa s predstavitvijo besedila na nivoju znakov sta:
 \begin{description}
-\item[Preprostejša priprava podatkov.] Edini vhodni podatki v takšen nevronski model so povedi, ki jih model vidi kot zaporedja znakov. Ta podatek dobimo neposredno iz jezikovnega korpusa in ne zahteva dodatne obdelave. Sorodne rešitve vpeljujejo dodatne značilke, ki jih tvorijo iz delov besed in besednih zvez ali pa jih vzamejo iz zunanjih virov, kot so leksikoni.
-\item[Možnost boljših predstavitev podatkov.] Model predstavljen v \cite{Kim2015} lahko razdelimo na dva glavna dela. Jezikovni model, implementiran z rekurentnimi nevronskimi mrežami, je del, ki se iz vzorcev uči zakonitosti jezika. Drugi del, implementiran s konvolucijskimi nevronskimi mrežami, se uči vhodne podatke pretvoriti v jezikovnemu modelu uporabne vektorje značilk. Zasnova predstavitvenega modela je takšna, da spodbuja prepoznavo vzorcev kot so pogoste končnice in predpone besed ter druga pogosta zaporedja znakov.
+\item[Preprostejša priprava podatkov:] edini vhodni podatki v takšen nevronski model so povedi, ki jih model vidi kot zaporedja znakov. Ta podatek dobimo neposredno iz jezikovnega korpusa in ne zahteva dodatne obdelave. Sorodne rešitve vpeljujejo dodatne značilke, ki jih tvorijo iz delov besed in besednih zvez ali pa jih vzamejo iz zunanjih virov, kot so leksikoni.
+\item[Možnost boljše predstavitve podatkov:] model predstavljen v delu avtorjev Kim in sod. \cite{Kim2015} lahko razdelimo na dva glavna dela. Jezikovni model, implementiran z rekurentnimi nevronskimi mrežami, je del, ki se iz vzorcev uči zakonitosti jezika. Drugi del, implementiran s konvolucijskimi nevronskimi mrežami, se uči vhodne podatke pretvoriti v vektorje značilk uporabne jezikovnemu modelu. Zasnova predstavitvenega modela je takšna, da spodbuja prepoznavo vzorcev, kot so pogoste končnice in predpone besed ter druga pogosta zaporedja znakov.
 \end{description}
 
-\subsection*{Collobert, Weston, Bottou, Karlen, Kavukcuoglu, Kuksa (2011)\cite{Collobert2011}}
-Avtorji predstavijo nevronsko mrežo z arhitekturo, ki je uporabna pri označevanju različnih zaporedij s področja obdelave naravnega jezika. Te naloge vključujejo oblikoskladenjsko označevanje, prepoznavo imenskih entitet in določanje semantičnih vlog.
+\subsection*{Collobert, Weston, Bottou, Karlen, Kavukcuoglu, Kuksa (2011)}
+Avtorji \cite{Collobert2011} predstavijo nevronsko mrežo z arhitekturo, ki je uporabna pri označevanju različnih zaporedij s področja obdelave naravnega jezika. Te naloge vključujejo oblikoskladenjsko označevanje, prepoznavo imenskih entitet in določanje udeleženskih vlog (semantic role labeling).
 
 To vsestransko uporabnost modela so dosegli s tem, da niso ročno tvorili značilk namenjenih točno določenim nalogam, ampak so pripravili model, ki se sam nauči iz besedila izluščiti uporabne lastnosti.
 
-Model, ki so ga implementirali, ima na vhodu konvolucijski sloj, ki mu sledi združevalni sloj, nazadnje pa še več tesno povezanih slojev. Njihova nevronska mreža deluje na nivoju besed, ki vstopajo v model kot vektorske vložitve. Model so učili na korpusu, ki so ga zgradili iz celotne angleške Wikipedije in na korpusu Reuters RCV1 REF.
+Model, ki so ga implementirali, ima na vhodu konvolucijski sloj, ki mu sledi združevalni sloj, nazadnje pa še več polno povezanih slojev. Njihova nevronska mreža deluje na nivoju besed, ki vstopajo v model kot vektorske vložitve. Model so učili na korpusu, ki so ga zgradili iz celotne angleške Wikipedije in na korpusu Reuters RCV1.
 
-Svoj cilj, da bi razvili večnamenski model za različne vrste označevanja besedil so uresničili, saj so ocene njihovega označevalnika le rahlo zaostajale za ocenami najboljših, namenskih označevalikov.
+Njihov večnamenski model za različne vrste označevanja besedil je le rahlo zaostajal za najboljšimi, namenskimi označevalniki.
 
 
-\subsection*{Dos Santos, Zadrozny (2014)\cite{Santos2014}}
+\subsection*{Dos Santos, Zadrozny (2014)}
 \label{nn:santos}
-V tem članku je predstavljen model oblikoskladenjskega označevalnika z globokimi nevronskimi mrežami, ki združuje predstavitve na nivoju besed in na nivoju znakov. Globoka nevronska mreža, ki so jo zgradili ima na vhodu konvolucijski sloj, ki omogoča iskanje značilk iz besed poljubne dolžine. Tekom označevanja konvolucijski sloj gradi vektorske vložitve na nivoju znakov za vsako besedo, tudi za takšne, ki jih še ni videl v učni množici. Prednost pristopa k obdelavi besedila na nivoju znakov je v tem, da ni potrebno vnašati značilk s podatki o besedah in njihovih lastnosti.
+V članku \cite{Santos2014} je predstavljen model oblikoskladenjskega označevalnika z globokimi nevronskimi mrežami, ki združuje predstavitve na nivoju besed in na nivoju znakov. Globoka nevronska mreža, ki so jo zgradili, ima na vhodu konvolucijski sloj, ki omogoča iskanje značilk iz besed poljubne dolžine. Tekom označevanja konvolucijski sloj gradi vektorske vložitve na nivoju znakov za vse besede, tudi za takšne, ki jih ni videl v učni množici. Prednost pristopa k obdelavi besedila na nivoju znakov je v tem, da ni potrebno vnašati značilk s podatki o besedah in njihovih lastnosti.
 
-Za demonstracijo učinkovitosti takšnega pristopa so razvili označevalnika za portugalski in angleški jezik. Oba označevalnika delujeta brez vpeljave dodatnih značilk. Angleški je dosegel 97,32\% točnost, portugalski pa 97,42\%.
+Za demonstracijo učinkovitosti pristopa so razvili označevalnika za portugalski in angleški jezik. Oba označevalnika delujeta brez vpeljave dodatnih značilk. Angleški je dosegel klasifikacijsko točnost 97,32\%, portugalski pa 97,42\%.
 
-V članku pokažejo tudi, da je za doseganje primerljivih rezultatov brez uporabe vložitev na nivoju znakov potrebno vpeljati dodatne, ročno pripravljene značilke. Kot slabost pristopa brez uvajanja dodatnih značilk navajajo dejstvo, da je pri takšnem modelu potrebno nastaviti več parametrov modela, kar pa po njihovem zahteva manj ročnega dela kot tvorjenje značilk.
+V članku pokažejo tudi, da je za doseganje primerljivih rezultatov brez uporabe vložitev na nivoju znakov potrebno vpeljati dodatne, ročno pripravljene značilke. Kot slabost pristopa brez uvajanja dodatnih značilk navajajo dejstvo, da je pri takšnem modelu potrebno nastaviti več parametrov, kar pa zahteva manj ročnega dela kot tvorjenje značilk.
 
 
-\subsection*{Labeau, Allauzen (2016)\cite{Labeau2015}}
+\subsection*{Labeau, Allauzen (2016)}
 \label{nn:labeau}
-Avtorji članka so uporabili različne arhitekture nevronskih mrež za implementacijo oblikoskladenskega označevalnika, ki deluje na nivoju znakov.
+Labeau in Allauzen \cite{Labeau2015} sta uporabila različne arhitekture nevronskih mrež za implementacijo oblikoskladenskega označevalnika, ki deluje na nivoju znakov. Pristop deluje na dveh nivojih modeliranja, ki se učita hkrati. Ta nivoja sta konvolucijska nevronska mreža in polno povezan nivo za napovedovanje oznak.
 
-Deluje na dveh nivojih modeliranja, ki se učita hkrati. Ta nivoja sta konvolucijska nevronska mreža in tesno povezan nivo za napovedovanje oznak.
-
-Konvolucijska nevronska mreža se uči predstavitev posameznih besed na nivoju znakov, napovedni nivoji pa se učijo iz teh predstavitev izpeljevati oblikoskladenjske oznake. Napovedni nivo so implementirali z uporabo tesno povezanih nevronskih mrež in z dvosmerno rekurentno mrežo. Model so učili na nemškem korpusu TIGER Treebank in svoje rezultate primerjali z označevalnikom ki temelji na algoritmu CRF (REF Mueller et al., 2013). V primerjavi rezultatov so pokazali, da njihov model na nivoju znakov vedno deluje bolje kot njihova implementacija nevronskega označevalnika na nivoju besed. Najboljšim rezultatom označevalnika z algoritmom CRF se je najbolj približal model, ki združuje predstavitvi na nivoju znakov in na nivoju besed.
+Konvolucijska nevronska mreža se uči predstavitev posameznih besed na nivoju znakov, napovedni nivoji pa se učijo iz teh predstavitev izpeljevati oblikoskladenjske oznake. Napovedni nivo so implementirali z uporabo polno povezanih nevronskih mrež in z dvosmerno rekurentno mrežo. Model so učili na nemškem korpusu TIGER Treebank in svoje rezultate primerjali z označevalnikom, ki temelji na algoritmu CRF (Mueller in sod. \cite{Mueller2013}). V primerjavi rezultatov so pokazali, da njihov model na nivoju znakov vedno deluje bolje kot njihova implementacija nevronskega označevalnika na nivoju besed. Rezultatom označevalnika z algoritmom CRF se je najbolj približal model, ki združuje predstavitvi na nivoju znakov in na nivoju besed.
 
 
-\subsection*{Kim, Jernite, Sontag, Rush (2015) \cite{Kim2015}}
-Avtorji predstavijo jezikovni model osnovan na globokih nevronskih mrežah. Kot pri zgornjih dveh rešitvah (\ref{nn:santos}, \ref{nn:labeau}), je bil tudi tukaj uporabljen pristop z vhodi na nivoju znakov in ne na nivoju besed, oziroma pojavnic, kot je to pri jezikovnih modelih običajno. 
+\subsection*{Kim, Jernite, Sontag, Rush (2015)}
+Kim in sod.  \cite{Kim2015} predstavijo jezikovni model osnovan na globokih nevronskih mrežah. Kot pri zgornjih dveh rešitvah \cite{Santos2014,Labeau2015}, je bil tudi tukaj uporabljen pristop z vhodi na nivoju znakov in ne na nivoju besed, oziroma pojavnic, kot je to pri jezikovnih modelih običajno. 
 
-Njihov jezikovni model je opravljal nalogo napovedovanja naslednje besede. Struktura nevronske mreže je podobna prejšnjim rešitvam opisanim v tem podpoglavju. Zgradba modela s primerom uporabe je vidna na sliki \ref{fig:kimmodel}. V svojem modelu so uporabil tudi hitrocestno nevronsko mrežo med konvolucijskimi in rekurentnimi sloji. V primerjavi rezultatov so opazili, da njihov jezikovni model ob uporabi hitrocestne mreže daje boljšo oceno čudenja, kakor model, ki vmesne hitrocestne mreže ne uporablja.
+Jezikovni model je opravljal nalogo napovedovanja naslednje besede. Struktura nevronske mreže je podobna prejšnjim rešitvam opisanim v tem podpoglavju. Zgradba modela s primerom uporabe je vidna na sliki \ref{fig:kimmodel}. V svojem modelu so uporabil tudi hitrocestno nevronsko mrežo med konvolucijskimi in rekurentnimi sloji. V primerjavi rezultatov so opazili, da njihov jezikovni model ob uporabi hitrocestne mreže daje boljšo oceno čudenja, kakor model, ki vmesne hitrocestne mreže ne uporablja.
 
 \begin{figure}
-\label{fig:kimmodel}
 \centering
 
-\includegraphics[width=0.8\textwidth]{kimmodel.png}
-\caption{Arhitektura modela za napovedovanje naslednje besede z vhodi na nivoju znakov. Takšen jezikovni model je bil predstavljen v \cite{Kim2015}. Vhod na nivoju znakov je na spodnji strani skice. Od spodaj navzgor vhodu sledijo preslikave v vektorske vložitve znakov, konvolucijski filtri različnih širin, združevalni sloji s časovnim maksimumom, hitrocestna nevronska mreža, mreža LSTM, in izhodni sloj enot z aktivacijo softmax.}
+\includegraphics[width=0.8\textwidth]{kimmodel2.png}
+\caption{Arhitektura modela za napovedovanje naslednje besede z vhodi na nivoju znakov. Takšen jezikovni model so predstavili Kim in sod. \cite{Kim2015}. Vhod na nivoju znakov je na spodnji strani skice. Od spodaj navzgor vhodu sledijo preslikave v vektorske vložitve znakov, konvolucijski filtri različnih širin, združevalni sloji s časovnim maksimumom, hitrocestna nevronska mreža, mreža LSTM, in izhodni sloj enot z aktivacijo softmax.}
+\label{fig:kimmodel}
 \end{figure}
 
 %----------------------------------------------------------------
@@ -502,44 +503,43 @@ Njihov jezikovni model je opravljal nalogo napovedovanja naslednje besede. Struk
 
 % Uvod: model iz kim et al (opisano že v poglavju 3)
 % Priprava podatkov
-V tem poglavju predstavimo zasnovo in implementacijo naše rešitve. Pri zasnovi rešitve zastavljenega problema smo se zgledovali po jezikovnem modelu predstavljenem v \cite{Kim2015}. Omenjeno rešitev smo vzeli za zgled, ker zadostuje našemu cilju, da bi se model nauči dodeljevati pravilne oznake, brez uvajanja dodatnih značilk, kot v \cite{Grcar2012} in \cite{Ljubesic2016}.
+V tem poglavju predstavimo zasnovo in implementacijo naše rešitve. Pri zasnovi rešitve zastavljenega problema smo se zgledovali po jezikovnem modelu avtorjev Kim in sod. \cite{Kim2015}. To rešitev smo izbrali, ker zadostuje našemu cilju, da se model nauči napovedovanja pravilne oznake, brez uvajanja dodatnih značilk, kot to počneta označevalnika Obeliks \cite{Grcar2012} in Reldi \cite{Ljubesic2016}.
 
-Glavni deli naše rešitve so priprava podatkov, zgradba označevalnika z nevronskimi mrežami. Za izboljšavo kvalitete napovedi našega označevalnika smo nazadnje implementirali še preprost ansambel, ki združuje naš označevalnik skupaj z označevalnikoma Obeliks \cite{Grcar2012} in Reldi \cite{Ljubesic2016}.
+Glavna dela naše rešitve sta priprava podatkov in zgradba označevalnika z nevronskimi mrežami. Za izboljšavo kvalitete napovedi označevalnika smo implementirali še preprost ansambel, ki naš označevalnik združuje z označevalnikoma Obeliks \cite{Grcar2012} in Reldi \cite{Ljubesic2016}.
 
 % Namen: zbrati podatke; preslikati v vektorje; zgraditi model ()
 \section{Priprava podatkov}
-Naš model smo učili na podatkih iz jezikovnega korpusa ssj500k, različice 2.0 \cite{ssj500kv2}. V času nastajanja pričujočega dela je bil to največji ročno označen korpus za slovenski jezik. Vključuje 586248 pojavnic v 27829 povedih, vsaki pojavnici pa je prirejena tudi oblikoskladenjska oznaka pa specifikacijah MULTEXT East REF.
+Naš model smo učili na podatkih iz jezikovnega korpusa ssj500k, različice 2.0 \cite{ssj500kv2}, ki je največji ročno označen korpus za slovenski jezik. Vključuje 586.248 pojavnic v 27.829 povedih, vsaki pojavnici pa je prirejena tudi oblikoskladenjska oznaka po specifikacijah MULTEXT East \cite{multext-east}.
 
 Korpus je na voljo v dveh formatih: XML-TEI in vert. Format XML-TEI boljše predstavlja hierarhijo korpusa, prednost formata vert pa je, da je enostavnejši za razčlenjevanje. Korpus v formatu vert je besedilna zbirka, v kateri ima vsaka vrstica pojavnico skupaj s pripadajočimi oznakami. Vrednosti v vrstici so med sabo ločene s tabulatorjem. Ker smo iz korpusa potrebovali samo pare pojavnic in njihovih oznak, smo se odločili za format vert.
 
 % (kratek) opis formata vert. Podrobnejše lahko korpus opišeš v poglavju 2.2
 \subsection*{Izbor povedi}
-Pri zgradbi nevronske mreže našega označevalnika smo se morali odločiti za določeno dolžino vhodnih povedi in pojavnic, ki jih bo naš model dovoljeval. Ta zahteva izhaja iz dejstva, da morajo imeti vhodni primeri v model enotne dimenzije.
+Pri zgradbi nevronske mreže našega označevalnika smo se morali odločiti za določeno dolžino vhodnih povedi in pojavnic, ki jih bo model dovoljeval. Ta zahteva izhaja iz dejstva, da morajo biti vhodi v model enotnih velikosti.
 
-Z večanjem dimenzij vhodnih podatkov narašča zahtevnost problema, s tem pa tudi čas učenja nevronskega modela. Iz tega razloga nismo želeli določiti našemu modelu prevelikih vhodnih dimenzij. Po drugi strani smo želeli ohraniti kar se da veliko primerov iz korpusa. Za lažji izbor omejitev dolžin, smo preverili porazdelitvi dolžin povedi in pojavnic. Porazdelitvi sta prikazani na slikah \ref{fig:dolzinepojavnic} in \ref{fig:dolzinepovedi}.
+Z večanjem dimenzij vhodnih podatkov narašča zahtevnost problema, s tem pa tudi čas učenja nevronskega modela. Iz tega razloga nismo želeli določiti našemu modelu prevelikih vhodov. Po drugi strani smo želeli ohraniti kar se da veliko primerov iz korpusa. Za lažji izbor omejitev dolžin, smo preverili porazdelitvi dolžin povedi in pojavnic. Porazdelitvi sta prikazani na slikah \ref{fig:dolzinepovedi} in \ref{fig:dolzinepojavnic}.
 
 \begin{figure}[H]
-\label{fig:dolzinepovedi}
 \centering
-\includegraphics[width=0.7\textwidth]{len_povedi_hist.pdf}
+\includegraphics[width=1.0\textwidth]{len_povedi_hist.pdf}
 \caption{Porazdelitev dolžin povedi v korpusu ssj500k. Dolžino povedi merimo s številom pojavnic.}
+\label{fig:dolzinepovedi}
 \end{figure}
 
 \begin{figure}[H]
-\label{fig:dolzinepojavnic}
 \centering
-\includegraphics[width=0.7\textwidth]{len_besede_hist.pdf}
+\includegraphics[width=1.0\textwidth]{len_besede_hist.pdf}
 \caption{Porazdelitev dolžin pojavnic v korpusu ssj500k.}
+\label{fig:dolzinepojavnic}
 \end{figure}
 
-Za zgornjo mejo dolžin pojavnic smo izbrali dolžino dvajset znakov, za povedi pa 80 pojavnic. Po odstranitvi predolgih povedi iz korpusa, jih je od začetnih 27829 ostalo še 27702. Tako smo odstranili manj kot pol odstotka vseh primerov iz korpusa in si s tem omogočili omejitev dimenzionalnost vhodnih podatkov na spremenljivo velikost.
+Za zgornjo mejo dolžin pojavnic smo izbrali dolžino dvajset znakov, za povedi pa 80 pojavnic. Po odstranitvi predolgih povedi iz korpusa, jih je od začetnih 27.829 ostalo še 27.702. Tako smo odstranili manj kot pol odstotka vseh primerov iz korpusa in s tem omogočili omejitev velikosti vhodnih podatkov na sprejemljivo velikost.
 
+\subsection*{Vektorske vložitve povedi}
 
-\subsection*{Pretvorba povedi v vektorske vložitve}
+Podatke smo za obdelavo v nevronskem modelu pretvorili v vektorsko obliko. Vsako poved je bilo potrebno pretvoriti v matriko z dimenzijami, ki ustrezajo izbranim omejitvam dolžine. Ker smo povedi omejili na 80 pojavnic in pojavnice na 20 znakov, smo na tem koraku povedi pretvorili v matrike z 80 vrsticami in 20 stolpci.
 
-Podatke smo za obdelavo v nevronskem modelu pretvorili v vektorsko obliko. Vsako poved je bilo potrebno pretvoriti v matriko z dimenzijami, ki ustrezajo izbranim omejitvam dolžine. Ker smo povedi omejili na dolžino 80 pojavnic in pojavnice na 20 znakov, smo na tem koraku povedi pretvorili v matrike z 80 vrsticami in 20 stolpci.
-
-Vrednosti v matriki smo zapolnili z indeksi znakov, prazna mesta pa zapolnili z ničlami. Spodnji primer ponazarja preslikavo povedi "To bi bila pravična vojna." v ustrezno matriko.
+Vrednosti v matriki smo zapolnili z indeksi znakov, prazna mesta pa z ničlami. Spodnji primer ponazarja preslikavo povedi "To bi bila pravična vojna." v ustrezno matriko.
 
 Dana poved je zaporedje pojavnic:
 $$
@@ -553,7 +553,7 @@ $$
 \end{pmatrix}
 $$
 
-Vsaki pojavnici preslikamo znake v indekse in jih vstavimo v vektor dolžine 20. Vektorje pojavnic zložimo skupaj v vektor povedi:
+Vsaki pojavnici znake preslikamo v indekse in jih vstavimo v vektor dolžine 20. Vektorje pojavnic zložimo skupaj v vektor povedi:
 
 $$
 \bordermatrix{
@@ -570,81 +570,81 @@ $$
 $$
 
 
-\subsection*{Pretvorba oblikoskladenjskih oznak v vektorske vložitve}
-Oblikoskladenjske oznake smo za ustrezno predstavitev v računalniškem pomnilniku preslikali v vektorske vložitve.
+\subsection*{Vektorska vložitev oblikoskladenjskih oznak}
+Oblikoskladenjske oznake smo za ustrezno predstavitev preslikali v vektorske vložitve.
 
-Pri tipičnem pristopu s področja strojnega učenja bi oznake predstavili s kodiranjem one-hot. Takšno
+Tipičen pristop strojnega učenja bi oznake predstavili s kodiranjem one-hot. Takšno
 kodiranje ima v našem primeru dve pomanjkljivosti:
 \begin{description}
 \item[Velika prostorska zahtevnost] Vseh možnih oznak po specifikaciji MULTEXT East je 1900. To pomeni, da bi morali vsaki izmed pol milijona pojavnic v korpusu prirediti 1900 dimenzionalni vektor.
 \item[Izguba informacij o odvisnostih med oznakami] Pri kodiranju one-hot so vsi razredi med sabo linearno neodvisni in si zato ne morejo deliti nekaterih istih ponavljajočih lastnosti. V našem primeru so takšne lastnosti sklon, spol, število in podobne, ki se pojavljajo pri različnih besednih vrstah.
 \end{description}
 
-Zaradi navedenih pomanjkljivosti smo uvedli novo kodiranje oblikoskladenjskih oznak. To kodiranje tvori gostejše vektorske vložitve oznak in omogoča deljenje posameznih lastnosti med različnimi vrstami oznak.
+Zaradi navedenih pomanjkljivosti smo uvedli novo kodiranje oblikoskladenjskih oznak, ki tvori goste vektorske vložitve oznak in omogoča deljenje lastnosti med različnimi vrstami oznak.
 
-Za potrebo implementacije kodiranja smo iz specifikacij oblikoskladenjskih oznak zbrali vse možne lastnosti in njihove vrednosti. Posamezne lastnosti smo s kodiranjem one-hot preslikali v vektorske vložitve in jih zaporedno zložili v daljši vektor. Seznam lastnosti oblikoskladenjskih oznak je skupaj z njihovimi mesti v vektorskih vložitvah prikazan v tabeli \ref{tbl:indeks_lastnosti_oznak}.
+Za to smo iz specifikacij oblikoskladenjskih oznak zbrali vse možne lastnosti in njihove vrednosti. Posamezne lastnosti smo s kodiranjem one-hot preslikali v vektorske vložitve in jih zaporedno zložili v daljši vektor. Seznam lastnosti oblikoskladenjskih oznak je skupaj z njihovimi mesti v vektorskih vložitvah prikazan v tabeli \ref{tbl:indeks_lastnosti_oznak}.
 
-S takšnim kodiranjem smo vektorje oznak v primerjavi s kodiranjem one-hot dosegli zmanjšanje dolžin vektorjev iz 1900 na 118. Poleg zmanjšanja dimenzionalnosti smo dosegli tudi deljenje lastnosti med različnimi oznakami. Tako se lahko naš model o pogostih besednih lastnostih v slovenskem jeziku uči preko različnih besednih vrst.
+S takšnim kodiranjem smo dolžine vektorje oznak v primerjavi s kodiranjem one-hot zmanjšali iz 1900 na 118. Poleg zmanjšanja dimenzionalnosti smo dosegli tudi deljenje lastnosti med različnimi oznakami. Tako se lahko naš model o pogostih besednih lastnostih v slovenskem jeziku uči preko različnih besednih vrst.
 
 \begin{table}
 \caption{Lokacije lastnosti v vektorski vložitvi oznak.}
     \begin{center}
-        \begin{tabular}{l l l}
+        \begin{tabular}{l l l l}
 \hline
-Lastnost & Začetek & Konec \\ \hline
-Besedna vrsta & 1 & 13 \\
-Določnost & 14 & 16 \\
-Naslonskost & 17 & 19 \\
-Nikalnost & 20 & 22 \\
-Glagolska oblika & 23 & 30 \\
-Oseba & 31 & 35 \\
-Sklon & 36 & 43 \\
-Spol & 44 & 48 \\
-Spol svojine & 49 & 53 \\
-Število & 54 & 58 \\
-Število svojine & 59 & 63 \\
-Stopnja pridevnika & 64 & 67 \\
-Glagolski vid & 68 & 72 \\
-Vrsta glagola & 73 & 75 \\
-Vrsta neuvrščene pojavnice & 76 & 83 \\
-Vrsta pridevnika & 84 & 87 \\
-Vrsta prislova & 88 & 90 \\
-Vrsta samostalnika & 91 & 93 \\
-Vrsta števnika & 94 & 98 \\
-Vrsta veznika & 99 & 101 \\
-Vrsta zaimka & 102 & 111 \\
-Zapis števnika & 112 & 115 \\
-Živost samostalnika & 116 & 118 \\
+Lastnost & Začetek & Konec & Dolžina\\ \hline
+Besedna vrsta & 1 & 13 & 13\\
+Določnost & 14 & 16 & 3\\
+Naslonskost & 17 & 19 & 3\\
+Nikalnost & 20 & 22 & 3\\
+Glagolska oblika & 23 & 30 & 8\\
+Oseba & 31 & 35 & 5\\
+Sklon & 36 & 43 & 8\\
+Spol & 44 & 48 & 5\\
+Spol svojine & 49 & 53 & 5\\
+Število & 54 & 58 & 5\\
+Število svojine & 59 & 63 & 5\\
+Stopnja pridevnika & 64 & 67 & 4\\
+Glagolski vid & 68 & 72 & 5\\
+Vrsta glagola & 73 & 75 & 3\\
+Vrsta neuvrščene pojavnice & 76 & 83 & 8\\
+Vrsta pridevnika & 84 & 87 & 4\\
+Vrsta prislova & 88 & 90 & 3\\
+Vrsta samostalnika & 91 & 93 & 3\\
+Vrsta števnika & 94 & 98 & 5\\
+Vrsta veznika & 99 & 101 & 3\\
+Vrsta zaimka & 102 & 111 & 10\\
+Zapis števnika & 112 & 115 & 4\\
+Živost samostalnika & 116 & 118 & 3\\
 \hline
         \end{tabular}
     \end{center}
 \label{tbl:indeks_lastnosti_oznak}
 \end{table}
 
-Takšna predstavitev spremeni pristop k problemu. V primeru, da bi razrede predstavili s kodiranjem one-hot, bi oblikoskladenjsko označevanje reševali z večrazredno klasifikacijo, kjer bi bila vsaka možna oznaka en razred. V našem primeru imamo drugačen cilj, saj ne dodeljujemo enega razreda, temveč več različnih oznak. Takšen pristop imenujemo večznačna klasifikacija. Sprememba pristopa ima to slabost, da lahko model napoveduje kombinacije oblikoskladenjskih lastnosti, ki ne sodijo skupaj in tako tvori neveljavne oblikoskladenjske oznake. Primer neveljavne oznake je glagol, ki mu model pripiše sklon.
+Opisana predstavitev spremeni pristop k problemu. V primeru, da bi razrede predstavili s kodiranjem one-hot, bi oblikoskladenjsko označevanje reševali z večrazredno klasifikacijo, kjer bi bila vsaka možna oznaka en razred. V našem primeru imamo drugačen cilj, saj ne dodeljujemo enega razreda, temveč več različnih oznak. Takšen pristop imenujemo večznačna klasifikacija. Sprememba pristopa ima to slabost, da lahko model napoveduje kombinacije oblikoskladenjskih lastnosti, ki ne sodijo skupaj in tako tvori neveljavne oblikoskladenjske oznake. Primer neveljavne oznake je glagol, ki mu model pripiše sklon.
 
-Ta problem smo poskusili omejiti s tem, da smo vse vektorje lastnosti razširili z dodatnim poljem ki označuje, da ta lastnost ni veljavna. S temi dodatnimi polji smo želeli nevronskemu modelu eksplicitno označiti, kdaj določena lastnost ni veljavna.
+Ta problem smo poskusili omejiti s tem, da smo vektorje lastnosti razširili z dodatnim poljem, ki označuje, da ta lastnost ni veljavna. S temi dodatnimi polji smo želeli nevronskemu modelu eksplicitno označiti, kdaj določena lastnost ni veljavna.
 
 
 \section{Nevronske mreže}
-Pri strukturi nevronskega modela smo se zgledovali po modelu predstavljenem v \cite{Kim2015}. Nevronsko mrežo smo zgradili iz več delov, ki so med sabo funkcionalno ločeni.
+Pri strukturi nevronskega modela smo se zgledovali po modelu predstavljenem v članku avtorjev Kim in sod. \cite{Kim2015}. Nevronsko mrežo smo zgradili iz več delov, ki so med sabo funkcionalno ločeni.
 
 \subsection*{Uporabljena orodja}
 
-Za implementacijo nevronske mreže smo uporabili odprtokodno knjižnico Keras za programski jezik Python. Knjižnica Keras nudi enoten vmesnik za delo z implementacijami nevronskih mrež Tensorflow, Theano in Microsoft cognitive toolkit.
+Za implementacijo nevronske mreže smo uporabili odprtokodno knjižnico Keras za programski jezik Python. Knjižnica Keras nudi enoten vmesnik za delo z implementacijami nevronskih mrež Tensorflow, Theano in Microsoft Cognitive toolkit.
 
-Keras omogoča enostavno gradnjo različnih vrst nevronskih mrež. Nudi gradnike, in ovojnice za gradnike, ki se jih da preprosto povezati v modele. Kljub preprosti uporabi, uporabniku dopušča svobodo pri nastavljanju parametrov.
+Keras omogoča enostavno gradnjo različnih vrst nevronskih mrež. Nudi gradnike in ovojnice za gradnike, ki se jih da preprosto povezati v modele. Kljub preprosti uporabi uporabniku dopušča svobodo pri nastavljanju parametrov.
 
 
 \subsection*{Vhod}
 Za začetni sloj v nevronski model smo določili Kerasov gradnik Input. Ta gradnik iz vhodnih podatkov zgradi vektorske vložitve.
 
-V našem primeru so vhodni podatki vektorji besed, dolžine 20 znakov. Po zgledu iz \cite{Kim2015} smo gradniku Input določili dimenzijo 60, kar pomeni, da se vsak znak preslika v gosto vektorsko vložitev dolžine 60. Sloj Input tako preslika vhodne vektorje besed v matrike dimenzije $20 \times 60$.
+V našem primeru so vhodni podatki vektorji besed dolžine 20 znakov. Po zgledu \cite{Kim2015} smo gradniku Input določili dimenzijo 60, kar pomeni, da se vsak znak preslika v gosto vektorsko vložitev dolžine 60. Sloj Input tako preslika vhodne vektorje besed v matrike dimenzije $20 \times 60$.
 
 Kot alternativa gostim vektorskim vložitvam znakov, bi lahko znake predstavili z redkimi vektorji one-hot, vendar bi v tem primeru imeli opravka z matrikami besed dimenzije $20 \times 131$, saj je v korpusu 131 različnih znakov, mi pa smo v našem modelu želeli obravnavati vse znake.
 
 \subsection*{Predstavitveni model}
-Vhodnemu sloju, ki pripravi vektorske vložitve znakov sledi več vzporednih konvolucijskih slojev. V \cite{Kim2015} so preizkusili dve konfiguraciji konvolucijskih slojev, ki se razlikujeta v številu slojev in številu enot v slojih. Ker poročajo o boljših rezultatih pri uporabi konfiguracije z več parametri, smo si tudi mi izbrali takšno.
+Vhodnemu sloju, ki pripravi vektorske vložitve znakov sledi več vzporednih konvolucijskih slojev. V sorodnem modelu \cite{Kim2015} so preizkusili dve konfiguraciji konvolucijskih slojev, ki se razlikujeta po številu slojev in številu enot v slojih. Ker poročajo o boljših rezultatih pri uporabi konfiguracije z več parametri, smo tudi mi izbrali takšno.
 
 Konvolucijska nevronska mreža, ki smo jo implementirali ima sedem vzporednih slojev. Vsi sloji uporabljajo aktivacijsko funkcijo hiperbolični tangens, razlikujejo pa se v številu filtrov in njihovi širini. Uprabljena konfiguracija je predstavljena v tabeli \ref{tbl:konfiguracijacnn}.
 
@@ -666,47 +666,46 @@ Konvolucijska nevronska mreža, ki smo jo implementirali ima sedem vzporednih sl
 \label{tbl:konfiguracijacnn}
 \end{table}
 
-Vsakemu izmed konvolucijskih slojev sledi sloj globalnega združevanja po maksimumu \ref{pooling}. V teh slojih se izhodi konvolucijskih slojev strnejo v gostejši zapis, saj združevalna funkcija podatke v vsaki časovni enoti povzame z njihovim maksimumom. Tako dobljene združitve zložimo v skupni vektor.
+Vsakemu izmed konvolucijskih slojev sledi sloj globalnega združevanja po maksimumu (glej razdelek\ref{pooling}). V teh slojih se izhodi konvolucijskih slojev strnejo v gostejši zapis, saj združevalna funkcija podatke v vsaki časovni enoti povzame z njihovim maksimumom. Tako dobljene združitve zložimo v skupen vektor.
 
-Združevalnim slojem sledi še hitrocestna nevronska mreža \ref{highway}, s katero omogočimo lažji pretok informacij.
+Združevalnim slojem sledi še hitrocestna nevronska mreža (razdelek \ref{highway}), s katero omogočimo lažji pretok informacij.
 
 Do sedaj opisane sloje smo ovili z ovojnico TimeDistributed, ki omogoči modeliranje časovno odvisnih podatkov. V našem primeru so časovne enote besede v povedi.
 
 
 \subsection*{Jezikovni model}
 
-Del implementacije naše rešitve, ki je najbolj prilagojen za učenje zakonitosti jezika je implementiran z rekurentnimi nevronskimi mrežami z dolgim kratkoročnim spominom LSTM. Kot pri večjem izmed modelov, ki sta predstavljena v \cite{Kim2015}, smo tudi mi sloju LSTM dodelili 650 enot.
+Del implementacije naše rešitve, ki je najbolj prilagojen za učenje zakonitosti jezika, je implementiran z rekurentnimi nevronskimi mrežami z dolgim kratkoročnim spominom (LSTM). Kot pri večjem izmed modelov, implementiranih v rešitvi avtorjev Kim in sod. \cite{Kim2015}, smo tudi mi sloju LSTM dodelili 650 enot.
 
-Jezikovni model iz \cite{Kim2015} smo prilagodili tako, da nismo imeli dveh slojev LSTM za obdelavo besedila v eno smer, ampak smo uporabili dvosmerni pristop. Pri našem pristopu smo sloju, ki podatke obdeluje v smeri iz leve proti desni dodali še sloj, ki deluje v obratno smer. S tem smo želeli naš model spodbuditi k odkrivanju odvisnoti med besedami v obeh smereh.
+Za razliko od implementacije sorodnega jezikovnega modela \cite{Kim2015} smo jezikovni model prilagodili tako, da nismo imeli dveh slojev LSTM za obdelavo besedila v eno smer, ampak smo uporabili dvosmerni pristop. Pri našem pristopu smo sloju, ki podatke obdeluje v smeri iz leve proti desni dodali še sloj, ki deluje v obratno smer. S tem smo želeli naš model spodbuditi k odkrivanju odvisnoti med besedami v obeh smereh.
 
 Jezikovni model smo implementirali z gradnikoma LSTM in Bidirectional, ki sta sestavni del knjižnice Keras. 
 
 \subsection*{Odločitveni model}
 %
 
-Za določanje oznak smo kot zadnji gradnik našega modela dodali sloj tesno povezanih enot. Teh enot je 118; toliko, kolikor je dolžina naših predstavitev oznak. Ker smo želeli v vsaki izmed enot dobiti oceno verjetnosti oznake smo za aktivacijo uporabili logistično funkcijo.
+Za določanje oznak smo kot zadnji gradnik našega modela dodali polno povezan sloj. Enot v tem sloju je 118; toliko, kolikor je dolžina naših predstavitev oznak. Ker smo želeli v vsaki izmed enot dobiti oceno verjetnosti oznake, za aktivacijsko funkcijo uporabili logistično funkcijo.
 
 \section{Učenje modela}
 
-Našo nevronsko mrežo smo med razvojem učili na 90 odstotkih celotne učne množice. Za funkcijo izgube smo določili binarno prečno entropijo. Binarna prečna entropija je primerna funkcija izgube pri problemih klasifikacije z več oznakami. Ta funkcija je že implementirana v knjižnici Tensorflow in podprta v Kerasu.
+Našo nevronsko mrežo smo med razvojem učili na 90 odstotkih celotne učne množice. Za funkcijo izgube smo določili binarno prečno entropijo, ki je primerna pri problemih klasifikacije z več oznakami. Ta funkcija je že implementirana v knjižnici Tensorflow in podprta v Kerasu.
 
-Dokončno sestavljen označevalnik smo učili z optimizacijskim algoritmom Adam v 30 sprehodih skozi učno množico. Na sliki \ref{fig:loss} je prikazano gibanje vrednosti funkcije izgube med učenjem. Pojemajoče padanje nakazuje, da se je optimizacijski algoritem približal optimalni konfiguraciji uteži v nevronski mreži, kar smo tudi potrdili s preizkusi na testni množici in s prečnim preverjanjem.
+Dokončno sestavljen označevalnik smo učili z optimizacijskim algoritmom Adam v 30 sprehodih skozi učno množico. Na sliki \ref{fig:loss} je prikazano gibanje vrednosti funkcije izgube med učenjem. Pojemajoče padanje nakazuje, da se je optimizacijski algoritem približal optimalni konfiguraciji uteži v nevronski mreži, kar smo potrdili s preizkusi na testni množici in s prečnim preverjanjem.
 
 \begin{figure}[H]
-\label{fig:loss}
 \centering
 \includegraphics[width=1.0\textwidth]{loss.pdf}
 \caption{Prikaz izgube pri učenju modela v 30 korakih.}
+\label{fig:loss}
 \end{figure}
 
 \section{Ansambel označevalnikov}
 
 Z namenom izboljšanja našega modela, smo implementirali preprost ansambel označevalnikov. V ansambel smo poleg naše rešitve vključili še označevalnika Obeliks \cite{Grcar2012} in Reldi \cite{Ljubesic2016}.
 
-Implementirali smo preprost algoritem, ki oznake za vsako besedo vhodne povedi dodeljuje na podlagi glasovanja vključenih modelov. Algoritem v primeru treh različnih, veljavnih oznak vzame tisto, ki jo predlaga naš nevronski označevalnik. V primeru da nevronski označevalnik ustvari neveljavno kombinacijo oblikoskladenjskih lastnosti, algoritem vrne oznako, ki jo predlaga označevalnik Reldi. V ostalih primerih, ko vsaj dva označevalnika predlagata isto oznako, vrne algoritem predlog večine.
+Implementirali smo preprost algoritem, ki oznake za vsako besedo vhodne povedi dodeljuje na podlagi glasovanja vključenih modelov. Algoritem v primeru treh različnih, veljavnih oznak, vzame tisto, ki jo predlaga nevronski označevalnik. V primeru, da nevronski označevalnik ustvari neveljavno kombinacijo oblikoskladenjskih lastnosti, algoritem vrne oznako, ki jo predlaga označevalnik Reldi. V ostalih primerih, ko vsaj dva označevalnika predlagata isto oznako, algoritem vrne predlog večine.
 
-Pri implementaciji tega algoritma smo dali največjo težo našemu označevalniku, ker je v primerjavi označevalnikov dosegel najboljše ocene (podpoglavje \ref{rezultati}). Izjemo za primer neveljavnih oznak smo uvedli, ker naš označevalnik takšne oznake lahko tvori, za razliko od ostalih dveh označevalnikov, ki vedno vračata veljavne oznake.
-
+Pri implementaciji ansambla smo največjo težo dali našemu označevalniku, ker je v primerjavi označevalnikov dosegel najboljše ocene (razdelek \ref{rezultati}). Izjemo za primer neveljavnih oznak smo uvedli, ker naš označevalnik, za razliko od ostalih dveh označevalnikov, takšne oznake lahko tvori.
 
 %----------------------------------------------------------------
 % Poglavje (Chapter) 5

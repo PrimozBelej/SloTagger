@@ -1,9 +1,9 @@
-\babel@toc {english}{}
-\babel@toc {slovene}{}
+\select@language {english}
+\select@language {slovene}
 \contentsline {chapter}{Povzetek}{}{chapter*.2}
-\babel@toc {english}{}
+\select@language {english}
 \contentsline {chapter}{Abstract}{}{section*.4}
-\babel@toc {slovene}{}
+\select@language {slovene}
 \contentsline {chapter}{\numberline {1}Uvod}{1}{chapter.1}
 \contentsline {chapter}{\numberline {2}Oblikoskladenjsko ozna\IeC {\v c}evanje}{3}{chapter.2}
 \contentsline {section}{\numberline {2.1}Algoritmi\IeC {\v c}ne re\IeC {\v s}itve}{4}{section.2.1}
