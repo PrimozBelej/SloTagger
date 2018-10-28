@@ -20,6 +20,6 @@
 \contentsline {section}{\numberline {4.3}U\IeC {\v c}enje modela}{33}{section.4.3}
 \contentsline {section}{\numberline {4.4}Ansambel ozna\IeC {\v c}evalnikov}{34}{section.4.4}
 \contentsline {chapter}{\numberline {5}Evalvacija}{37}{chapter.5}
-\contentsline {section}{\numberline {5.1}Primerjava ozna\IeC {\v c}evalnikov}{38}{section.5.1}
-\contentsline {section}{\numberline {5.2}Analiza napak nevronskega ozna\IeC {\v c}evalnika}{38}{section.5.2}
+\contentsline {section}{\numberline {5.1}Primerjava ozna\IeC {\v c}evalnikov}{37}{section.5.1}
+\contentsline {section}{\numberline {5.2}Analiza napak nevronskega ozna\IeC {\v c}evalnika}{40}{section.5.2}
 \contentsline {chapter}{\numberline {6}Zaklju\IeC {\v c}ki}{45}{chapter.6}
