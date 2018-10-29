@@ -42,14 +42,14 @@
 % |||||||||||||||||||||| EDIT ACCORDINGLY |||||||||||||||||||||||
 %----------------------------------------------------------------
 \newcommand{\ttitle}{Oblikoskladenjsko označevanje slovenskega jezika z globokimi nevronskimi mrežami}
-\newcommand{\ttitleEn}{Part of speech tagging of slovene language using deep neural networks}
+\newcommand{\ttitleEn}{Part of speech tagging of Slovene language using deep neural networks}
 \newcommand{\tsubject}{\ttitle}
 \newcommand{\tsubjectEn}{\ttitleEn}
 \newcommand{\tauthor}{Primož Belej}
 \newcommand{\temail}{MAIL}
 \newcommand{\myyear}{2018}
-\newcommand{\tkeywords}{oblikoskladenjsko označevanje, globoko učenje, konvolucijske nevronske mreže}
-\newcommand{\tkeywordsEn}{part-of-speech tagging, deep learning, convolutional neural network}
+\newcommand{\tkeywords}{strojno učenje, oblikoskladenjsko označevanje, globoko učenje, konvolucijske nevronske mreže, rekurentne nevronske mreže, ansambli klasifikatorjev}
+\newcommand{\tkeywordsEn}{machine learning, part-of-speech tagging, deep learning, convolutional neural networks, recurrent neural networks, ensemble classifiers}
 \newcommand{\mysupervisor}{prof.~dr.\ Marko Robnik Šikonja}
 \newcommand{\mycosupervisor}{dr.\ Simon Krek}
 
@@ -456,7 +456,6 @@ V preostanku poglavja predstavimo nekatere prispevke s področja modeliranja nar
 \item[Možnost boljše predstavitve podatkov:] model predstavljen v delu avtorjev Kim in sod. \cite{Kim2015} lahko razdelimo na dva glavna dela. Jezikovni model, implementiran z rekurentnimi nevronskimi mrežami, je del, ki se iz vzorcev uči zakonitosti jezika. Drugi del, implementiran s konvolucijskimi nevronskimi mrežami, se uči vhodne podatke pretvoriti v vektorje značilk uporabne jezikovnemu modelu. Zasnova predstavitvenega modela je takšna, da spodbuja prepoznavo vzorcev, kot so pogoste končnice in predpone besed ter druga pogosta zaporedja znakov.
 \end{description}
 
-\subsection*{Collobert, Weston, Bottou, Karlen, Kavukcuoglu, Kuksa (2011)}
 Avtorji \cite{Collobert2011} predstavijo nevronsko mrežo z arhitekturo, ki je uporabna pri označevanju različnih zaporedij s področja obdelave naravnega jezika. Te naloge vključujejo oblikoskladenjsko označevanje, prepoznavo imenskih entitet in določanje udeleženskih vlog (semantic role labeling).
 
 To vsestransko uporabnost modela so dosegli s tem, da niso ročno tvorili značilk namenjenih točno določenim nalogam, ampak so pripravili model, ki se sam nauči iz besedila izluščiti uporabne lastnosti.
@@ -465,24 +464,16 @@ Model, ki so ga implementirali, ima na vhodu konvolucijski sloj, ki mu sledi zdr
 
 Njihov večnamenski model za različne vrste označevanja besedil je le rahlo zaostajal za najboljšimi, namenskimi označevalniki.
 
-
-\subsection*{Dos Santos, Zadrozny (2014)}
-\label{nn:santos}
 V članku \cite{Santos2014} je predstavljen model oblikoskladenjskega označevalnika z globokimi nevronskimi mrežami, ki združuje predstavitve na nivoju besed in na nivoju znakov. Globoka nevronska mreža, ki so jo zgradili, ima na vhodu konvolucijski sloj, ki omogoča iskanje značilk iz besed poljubne dolžine. Tekom označevanja konvolucijski sloj gradi vektorske vložitve na nivoju znakov za vse besede, tudi za takšne, ki jih ni videl v učni množici. Prednost pristopa k obdelavi besedila na nivoju znakov je v tem, da ni potrebno vnašati značilk s podatki o besedah in njihovih lastnosti.
 
 Za demonstracijo učinkovitosti pristopa so razvili označevalnika za portugalski in angleški jezik. Oba označevalnika delujeta brez vpeljave dodatnih značilk. Angleški je dosegel klasifikacijsko točnost 97,32\%, portugalski pa 97,42\%.
 
 V članku pokažejo tudi, da je za doseganje primerljivih rezultatov brez uporabe vložitev na nivoju znakov potrebno vpeljati dodatne, ročno pripravljene značilke. Kot slabost pristopa brez uvajanja dodatnih značilk navajajo dejstvo, da je pri takšnem modelu potrebno nastaviti več parametrov, kar pa zahteva manj ročnega dela kot tvorjenje značilk.
 
-
-\subsection*{Labeau, Allauzen (2016)}
-\label{nn:labeau}
 Labeau in Allauzen \cite{Labeau2015} sta uporabila različne arhitekture nevronskih mrež za implementacijo oblikoskladenskega označevalnika, ki deluje na nivoju znakov. Pristop deluje na dveh nivojih modeliranja, ki se učita hkrati. Ta nivoja sta konvolucijska nevronska mreža in polno povezan nivo za napovedovanje oznak.
 
 Konvolucijska nevronska mreža se uči predstavitev posameznih besed na nivoju znakov, napovedni nivoji pa se učijo iz teh predstavitev izpeljevati oblikoskladenjske oznake. Napovedni nivo so implementirali z uporabo polno povezanih nevronskih mrež in z dvosmerno rekurentno mrežo. Model so učili na nemškem korpusu TIGER Treebank in svoje rezultate primerjali z označevalnikom, ki temelji na algoritmu CRF (Mueller in sod. \cite{Mueller2013}). V primerjavi rezultatov so pokazali, da njihov model na nivoju znakov vedno deluje bolje kot njihova implementacija nevronskega označevalnika na nivoju besed. Rezultatom označevalnika z algoritmom CRF se je najbolj približal model, ki združuje predstavitvi na nivoju znakov in na nivoju besed.
 
-
-\subsection*{Kim, Jernite, Sontag, Rush (2015)}
 Kim in sod.  \cite{Kim2015} predstavijo jezikovni model osnovan na globokih nevronskih mrežah. Kot pri zgornjih dveh rešitvah \cite{Santos2014,Labeau2015}, je bil tudi tukaj uporabljen pristop z vhodi na nivoju znakov in ne na nivoju besed, oziroma pojavnic, kot je to pri jezikovnih modelih običajno. 
 
 Jezikovni model je opravljal nalogo napovedovanja naslednje besede. Struktura nevronske mreže je podobna prejšnjim rešitvam opisanim v tem podpoglavju. Zgradba modela s primerom uporabe je vidna na sliki \ref{fig:kimmodel}. V svojem modelu so uporabil tudi hitrocestno nevronsko mrežo med konvolucijskimi in rekurentnimi sloji. V primerjavi rezultatov so opazili, da njihov jezikovni model ob uporabi hitrocestne mreže daje boljšo oceno čudenja, kakor model, ki vmesne hitrocestne mreže ne uporablja.
@@ -714,43 +705,9 @@ Pri implementaciji ansambla smo največjo težo dali našemu označevalniku, ker
 \chapter{Evalvacija}
 \label{ch:evalvacija}
 
-V tem poglavju ocenimo ustreznost naše rešitve in jo primerjamo s sorodnima označevalnikoma za slovenski jezik. Za naš označevalnik analiziramo izstopajoče napake in raziščemo izvore napak.
-% * problem neobstoječih oznak
-% Prečno preverjanje
-%\section*{Mere kvalitete razvrščanja}
+V tem poglavju ocenimo ustreznost naše rešitve in jo primerjamo s sorodnima označevalnikoma za slovenski jezik. Za naš označevalnik analiziramo izstopajoče napake in raziščemo izvore napak. Naš označevalnik primerjamo z označevalnikoma Obeliks \cite{Grcar2012} in Reldi \cite{Ljubesic2016} ter z ansamblom vseh treh označevalnikov.
 
-%Mere, ki smo jih uporabili za ocenjevanje označevalnikov se v splošnem uporabljajo za ocenjevanje klasifikacijskih algoritmov. Kadar uporabljamo mere preciznosti, priklica in F1 pri večrazredni klasifikaciji, izračunamo oceno za vsakega izmed razredov. Skupek ocen pri vseh razredih lahko združimo v eno oceno. Ustrezen način posplošitve ocene je z uporabo povprečja, ki ga utežimo s številom vzorcev, ki pripadajo nekemu razredu.
-
-%\subsection*{Točnost}
-%Točnost je mera, ki predstavlja razmerje med številom pravilno razvrščenih vzorcev in številom vseh vzorcev.
-
-%\subsection*{Preciznost}
-%V kontekstu oblikoskladenjskega označevanja nam preciznost pove kolikšen delež besed, ki smo jim pripisali oznako neke 
-
-%V primeru dvorazredne klasifikacije je mera preciznosti definirana kot razmerje med številom resnično pozitivnih vzorcev in številom vzorcev za katere je bil napovedan pozitiven razred. Nizka ocena preciznosti lahko kaže na veliko število napačno pozitivno klasificiranih vzorcev.
-
-%\begin{equation}
-%\text{preciznost} = \frac{TP}{TP+FP}
-%\end{equation}
-
-
-%\subsection*{Priklic}
-
-%\begin{equation}
-%\text{priklic} = \frac{TP}{TP+FN}
-%\end{equation}
-
-%\subsection*{Mera F1}
-
-
-
-%\subsection*{Prečno preverjanje}
-% prečno preverjanje;
-% kaj je kfold cv; kaj odpravlja; slabost daljšega računanja,
-
-Naš označevalnik primerjamo z označevalnikoma Obeliks \cite{Grcar2012} in Reldi \cite{Ljubesic2016} ter z ansamblom vseh treh označevalnikov.
-
-Ocenjevali smo uspešnost označevalnikov pri napovedovanju besedne vrste in celotnih oznak. Za besedne vrste smo oceno izračunali z mero F1, za celotne oznake pa s klasifikacijsko točnostjo. Mera F1 daje v primeru neenakomerne porazdelitve razredov primernejše ocene od klasifikacijske točnosti, vendar je za ocenjevanje napovedovanja celotnih oznak zaradi prevelikega nabora oznak in posledično premajhne zastopanosti nekaterih oznak nismo mogli uporabiti.
+Ocenjevali smo uspešnost označevalnikov pri napovedovanju besedne vrste in celotnih oznak. Za besedne vrste smo oceno izračunali z mero F1, za celotne oznake pa s klasifikacijsko točnostjo. Mera F1 daje v primeru neenakomerne porazdelitve razredov primernejše ocene od klasifikacijske točnosti, vendar je za ocenjevanje napovedovanja celotnih oznak zaradi prevelikega nabora oznak in posledično premajhne zastopanosti nekaterih oznak nismo uporabili.
 
 
 % Zgoraj:  V primeru neenakomerne porazdelitve razredov so ocene mere F1 primernejše
@@ -759,10 +716,8 @@ Ocenjevali smo uspešnost označevalnikov pri napovedovanju besedne vrste in cel
 
 Vse označevalnike smo ocenili z desetkratnim prečnim preverjanjem. Iz korpusa ssj500k smo zaradi omejitev našega označevalnika (glej razdelek \ref{izborpovedi}) odstranili predolge povedi in povedi s predolgimi pojavnicami.
 
-\subsection*{Rezultati}
+\subsection*{Rezultati na besednih vrstah}
 \label{rezultati}
-
-\subsubsection*{Besedne vrste}
 
 \begin{table}[h]
 \caption{Ocene označevalnikov pri določanju besedne vrste. Ocene so izračunane z mero F1 z desetkratnim prečnim preverjanjem. Skupna ocena označevalnikov je izračunana kot uteženo povprečje.}
@@ -794,6 +749,9 @@ V tabeli \ref{tab:ocenebv} so prikazane ocene označevalnikov pri napovedovanju 
 V splošnem označevalniki nimajo težav s prepoznavo samostalnikov, glagolov, zaimkov, števnikov, predlogov, veznikov, členkov in ločil. Te besedne vrste vsi označevalniki napovejo z zelo visoko oceno. Razen Obeliksa, vsi označevalniki dobro napovedujejo tudi okrajšave.
 
 Razlog za slabe ocene pri medmetih in neuvrščenih pojavnicah je v redkosti teh oznak v učnem korpusu ssj500k \cite{ssj500kv2}. Na sliki \ref{fig:distbesednevrste} vidimo porazdelitev besednih vrst. Medmeti, okrajšave in neuvrščene besede so zelo redke, predstavljajo namreč manj kot en odstotek vseh oznak.
+...
+
+
 
 \begin{figure}[h]
 \centering
@@ -802,7 +760,7 @@ Razlog za slabe ocene pri medmetih in neuvrščenih pojavnicah je v redkosti teh
 \label{fig:distbesednevrste}
 \end{figure}
 
-\subsubsection*{Celotne oznake}
+\subsection*{Celotne oznake}
 
 \begin{table}[h]
 \caption{Ocene označevalnikov pri dodeljevanju celotne oznake. Uporabljena ocena je klasifikacijska točnost pridobljena z desetkratnim prečnim preverjanjem.}
@@ -816,7 +774,7 @@ Obeliks & Reldi & Nevro & Ansambel \\ \hline
     \end{center}
 \end{table}
 
-Ocene označevalnikov pri napovedovanju celotnih oznak so zapisane v tabeli \ref{tab:ocenemorf}. Ocene označevalnikov si od nižje k višji sledijo v vrstem redu Obeliks, Reldi, ansambelski označevalnik in nevronski označevalnik. Razlika med ocenama točnosti nevronskega in ansambelskega označevalnika je majhna: le 0.1\%. Razlog za slabšo oceno ansambelskega označevalnika je v tem, da sta označevalnika Reldi in Obeliks v dovolj velikem številu primerov preglasovala nevronski označevalnik in dodelila napačno skupno napoved.
+Ocene označevalnikov pri napovedovanju celotnih oznak so zapisane v tabeli \ref{tab:ocenemorf}. Ocene označevalnikov si od nižje k višji sledijo v vrstem redu Obeliks, Reldi, ansambelski označevalnik in nevronski označevalnik. Razlika med ocenama točnosti nevronskega in ansambelskega označevalnika je majhna: le 0.1\%. Razlog za slabšo oceno ansambelskega označevalnika je v tem, da sta označevalnika Reldi in Obeliks v dovolj velikem številu primerov preglasovala nevronski označevalnik in dodelila napačno skupno napoved. Glede na ta rezultat bi bilo smiselno ansambel utežiti in dodeliti slabšima označevalnikoma nižje uteži.
 
 
 \section{Analiza napak nevronskega označevalnika}
@@ -827,43 +785,53 @@ Ocene označevalnikov pri napovedovanju celotnih oznak so zapisane v tabeli \ref
 
 Ugotovili smo, da nevronski oblikoskladenjski označevalnik dosega pri napovedovanju celotnih oznak napovedno točnost 95,6\% (tabela \ref{tab:ocenemorf}). Zaradi velikega števila oblikoskladenjskih oznak in nizkega števila pojavitev nekaterih oznak je analiza napak preko vseh možnih oznak težje izvedljiva.
 
-V nadaljevanju bomo napake nevronskega označevalnika analizirali na nivoju posameznih lastnosti oblikoskladenjskih oznak. Za vsako lastnost izračunamo oceno z mero F1. Mero F1 izračunamo preko vseh vrednosti posamezne lastnosti in izračunamo njeno povprečje ter povprečje uteženo s številom pojavitev posamezne vrednosti. Ker se vrednosti lastnosti pojavljajo različno pogosto, prihaja pri teh dveh merah do večjih razlik. V splošnem, nam da uteženo povprečje boljši vpogled v kvaliteto napovedi, saj lahko na neuteženega vplivajo tudi zelo redke vrednost.
+V nadaljevanju bomo napake nevronskega označevalnika analizirali na nivoju posameznih lastnosti oblikoskladenjskih oznak. Za vsako lastnost izračunamo oceno z mero F1. Mero F1 izračunamo na dva načina. Pri makro F1 izračunamo oceno F1 preko vseh vrednosti posamezne lastnosti in izračunamo njeno povprečje. Pri mikro F1 vzamemo namesto povprečja ocen povprečje uteženo s številom pojavitev posamezne vrednosti. Ker se vrednosti lastnosti pojavljajo različno pogosto, prihaja pri teh dveh merah do večjih razlik. V splošnem nam da uteženo povprečje boljši vpogled v kvaliteto napovedi, saj lahko na neuteženega vplivajo tudi zelo redke vrednosti.
 
-Ocene lastnosti smo zapisali v tabelo \ref{tbl:ocene_lastnosti}. V tabeli opazimo da večina lastnosti dosega najvišje ocene z uteženo mero F1. Za spol, sklon in število bi si želeli višjo oceno, ker se te lastnosti pojavljajo v največ različnih vrstah oznak.
+Ocene lastnosti smo zapisali v tabelo \ref{tbl:ocene_lastnosti}. V tabeli opazimo, da večina lastnosti dosega najvišje ocene z uteženo mero F1. Za spol, sklon in število bi si želeli višjo oceno, ker se te lastnosti pojavljajo v največ različnih vrstah oznak.
 
-Pri ocenah z neuteženo mero F1 opazimo nižje ocene. Za nekatere izmed lastnosti z nižjo oceno izrišemo matrike napačnih klasifikacij, da bi bolje razumeli kakšne so napake. Na sliki \ref{fig:confusionbv} s klasifikacijami besednih vrst vidimo, da sta pri napačnih klasifikacijah besedni vrsti medmet in neuvrščeno najpogosteje označeni kot samostalnik.
+Pri ocenah z neuteženo mero F1 opazimo nižje ocene. Za nekatere izmed lastnosti z nižjo oceno izrišemo matrike napačnih klasifikacij, da bi bolje razumeli, kakšne so napake. Na sliki \ref{fig:confusionbv} s klasifikacijami besednih vrst vidimo, da sta pri napačnih klasifikacijah besedni vrsti medmet in neuvrščeno najpogosteje označeni kot samostalnik.
 
-Pripravili smo matrike napačnih klasifikacij za glagolske oblike (glej sliko \ref{fig:confusionglagolskeoblike}), vrste števnikov (slika \ref{fig:confstevnik}), spol svojine, ki je lastnost zaimkov (slika \ref{fig:confusionspolsvojine}) in za živost (slika \ref{fig:confusionzivost}), ki se pripisuje nekaterim samostalnikom.
+Pripravili smo matrike napačnih klasifikacij za glagolske oblike (glej sliko \ref{fig:confusionglagolskeoblike}), vrste števnikov (slika \ref{fig:confstevnik}), spol svojine, ki je lastnost zaimkov (slika \ref{fig:confusionspolsvojine}) in za živost (slika \ref{fig:confusionzivost}), ki se pripisuje nekaterim samostalnikom. 
+
+Pri glagolskih oblikah je iz matrike \ref{fig:confusionglagolskeoblike} razvidno, da označevalnik vsem oblika razen namenilniku in velelniku dodeljuje pravilne oznake. Glagolom v namenilniku v petini primerov dodeli vrednost, ki označuje, da beseda ni glagol. Velelnik prav tako v petini primerov narobe označi kot sedanjik.
+
+Popolnoma narobe se je označevalnik naučil prepoznavati glavne števnike. V matriki \ref{fig:confstevnik} opazimo, da jih prepozna kot zaimkovne. Z določanjem ostalih vrst števnikov nima težav.
+
+Kvaliteto napovedi spola svojine, ki je lastnost nekaterih zaimkov, vidimo v matriki na sliki \ref{fig:confusionspolsvojine}. Posebnost ki se pojavlja tu je, da označevalnik srednji spol prepoznava kot moški.
+
+Živost je redka lastnost in se pripisuje samo samostalnikom moškega spola ednine v tožilniku. Na sliki \ref{fig:confusionzivost} vidimo, da označevalnik dobro prepozna, kdaj živost ni primerna. Opazimo pa, da pri velikem delu primerov, pri katerih je ta lastnost, napove neveljavnost oznake živosti.
+
+Pri sestavljanju lastnosti v oblikoskladenjske oznake, smo v nekaterih primerih naleteli na neveljavne kombinacije lastnosti. Teh primerov je bilo razmeroma malo, saj je bilo neveljavnih 0,4\% vseh napovedi.
 
 \begin{table}
-\caption{Ocene nevronskega označevalnika pri napovedovanju vrednosti posameznih lastnosti. Utežena mera F1 izračuna skupno oceno vseh vrednosti lastnosti s povprečjem uteženim s število primerov posamezne lastnosti. Neutežena mera izračuna skupno oceno iz povprečja, ne glede na število primerov posamezne vrednosti.}
+\caption{Ocene nevronskega označevalnika pri napovedovanju vrednosti posameznih lastnosti. Ocene so zaokrožene na tretje decimalno mesto. Večja odstopanja med ocenama mikro F1 in makro F1 nakazujejo na redke pojavitve določenih vrednosti, za katere označevalnik daje slabe ocene. Vpliv slabih napovedi redkih vrednosti na oceno mikro F1 je omejen, na oceno makro F1 pa redke vrednosti vplivajo enako kot pogoste.}
     \begin{center}
         \begin{tabular}{l l l l}
 \hline
-Lastnost & Utežena mera F1 & Neutežena mera F1\\ \hline
-Besedna vrsta & 0.99 & 0.96\\
-Določnost & 1.0 & 0.98\\
-Naslonskost & 1.0 & 1.0\\
-Nikalnost & 1.0 & 1.0\\
-Glagolska oblika & 1.0 & 0.96\\
-Oseba & 1.0 & 0.99\\
-Sklon & 0.98 & 0.97\\
-Spol & 0.98 & 0.98 \\
-Spol svojine & 1.0 & 0.8\\
-Število & 0.99 & 0.98\\
-Število svojine & 1.0 & 1.0\\
-Stopnja pridevnika & 1.0 & 0.99\\
-Glagolski vid & 1.0 & 0.98\\
-Vrsta glagola & 1.0 & 1.0\\
-Vrsta neuvrščene pojavnice & 1.0 & 0.9\\
-Vrsta pridevnika & 1.0 & 0.97\\
-Vrsta prislova & 1.0 & 0.92\\
-Vrsta samostalnika & 0.99 & 0.98\\
-Vrsta števnika & 1.0 & 0.8\\
-Vrsta veznika & 1.0 & 1.0\\
-Vrsta zaimka & 1.0 & 0.99\\
-Zapis števnika & 1.0 & 1.0\\
-Živost samostalnika & 1.0 & 0.86\\
+Lastnost & Mikro F1 & Makro F1\\ \hline
+Besedna vrsta & 0.992 & 0.959\\
+Določnost & 0.999 & 0.980 \\
+Naslonskost & 1.000 & 0.999\\
+Nikalnost & 1.000 & 1.000\\
+Glagolska oblika & 0.998 & 0.962\\
+Oseba & 0.997 & 0.989\\
+Sklon & 0.977 & 0.973\\
+Spol & 0.985 & 0.981 \\
+Spol svojine & 1.000 & 0.797\\
+Število & 0.990 & 0.980\\
+Število svojine & 1.000 & 1.000\\
+Stopnja pridevnika & 0.997 & 0.995\\
+Glagolski vid & 0.997 & 0.983\\
+Vrsta glagola & 0.998 & 0.996\\
+Vrsta neuvrščene pojavnice & 0.999 & 0.903 \\
+Vrsta pridevnika & 0.996 & 0.972\\
+Vrsta prislova & 0.997 & 0.922\\
+Vrsta samostalnika & 0.993 & 0.980\\
+Vrsta števnika & 1.000 & 0.796\\
+Vrsta veznika & 0.999 & 0.996\\
+Vrsta zaimka & 0.999 & 0.989\\
+Zapis števnika & 1.000 & 0.999\\
+Živost samostalnika & 0.996 & 0.860\\
 \hline
         \end{tabular}
     \end{center}
@@ -914,13 +882,9 @@ Zapis števnika & 1.0 & 1.0\\
 \chapter{Zaključki}
 \label{ch:zakljucki}
 
-V tem delu smo predstavili področje oblikoskladenjskega označevanja, algoritmične pristope k temu problemu in obstoječe rešitve.
+Predstavili smo področje oblikoskladenjskega označevanja, algoritmične pristope k temu problemu in obstoječe rešitve. Implementiral in predstavili smo oblikoskladenjski označevalnik, ki temelji na globokih nevronskih mrežah. Naš označevalnik deluje na nivoju znakov in razen vhodnih povedi ne uporablja ročno pripravljenih značilk.
 
-Implementiral in predstavili smo oblikoskladenjski označevalnik, ki temelji na globokih nevronskih mrežah. Naš označevalnik deluje na nivoju znakov in razen vhodnih povedi ne uporablja ročno pripravljenih značilk.
-
-Zasnovali in implementirali smo zlaganje posameznih lastnosti oblikoskladenjskih oznak v vektorske vložitve. S tem pristopom smo uvedli deljenje lastnosti med različnimi oblikoskladenjskimi oznakami.
-
-Implementirali smo tudi preprost ansambelski označevalnik, ki poleg nevronskega označevalnika vključuje dva označevalnika za slovenski jezik. Označevalniki v ansamblu med sabo glasujejo o najprimernejši oznaki.
+Zasnovali in implementirali smo zlaganje posameznih lastnosti oblikoskladenjskih oznak v vektorske vložitve. S tem pristopom smo uvedli deljenje lastnosti med različnimi oblikoskladenjskimi oznakami. Implementirali smo tudi preprost ansambelski označevalnik, ki poleg nevronskega označevalnika vključuje še dva označevalnika za slovenski jezik. Označevalniki v ansamblu med sabo glasujejo o najprimernejši oznaki.
 
 Nevronski označevalnik se je izkazal za primerno rešitev, saj dosega boljše rezultate od obstoječih označevalnikov za slovenski jezik. Za razliko od obstoječih oblikoskladenjskih označevalnikov dosega dobre napovedi oznak brez ročne izdelave dodatnih značilk ali uporabe zunanjih virov, kot so leksikoni.
 
@@ -931,9 +895,9 @@ Glavna pomanjkljivost našega označevalnika je v tem, da v določenih primerih 
 
 Možna omilitev tega problema, bi bila z implementacijo lastne funkcije izgube, ki bi med učenjem modela kaznovala napovedovanje neveljavnih kombinacij. Ta pristop smo v omejeni obliki preizkusili z nadgradnjo binarne križne entropije z dodatnim kaznovanjem napovedovanja lastnosti, ki ne spadajo k neki besedni vrsti. Ta rešitev je pripeljala k hitrejši konvergenci optimizacijskega algoritma, ni pa odpravila problema. Menimo, da bi z implementacijo obširnejših pravil v funkciji izgube ta problem lahko odpravili.
 
-Druga možna rešitev bi zahtevala drugačen pristop k problemu. Namesto večzančne klasifikacije bi označevalnik lahko implementirali kot večciljno klasifikacijo, vendar bi morali v odločitveni model implementirati odvisnosti med izhodi označevalnika.
+Druga možna rešitev bi zahtevala drugačen pristop k problemu. Namesto večznačne klasifikacije bi označevalnik lahko implementirali kot večciljno klasifikacijo, vendar bi morali v odločitveni model implementirati odvisnosti med izhodi označevalnika.
 
-Ansambelski označevalnik je pri napovedovanju besednih vrst dajal boljše rezultate od posameznih označevalnikov. Pri napovedovanju celotnih oznak je bil le za 0,1\% slabši od nevronskega označevalnika. Menimo, da bi z drugačno implementacijo ansambla, kot je metoda zlaganja modelov (angleško stacking), lahko izboljšali točnost označevanja.
+Ansambelski označevalnik je pri napovedovanju besednih vrst dajal boljše rezultate od posameznih označevalnikov. Pri napovedovanju celotnih oznak je bil le za 0,1\% slabši od nevronskega označevalnika. Menimo, da bi z drugačno implementacijo ansambla, kot je metoda zlaganja modelov (angleško stacking), lahko še izboljšali točnost označevanja.
 
 
 %----------------------------------------------------------------
@@ -963,7 +927,7 @@ Ansambelski označevalnik je pri napovedovanju besednih vrst dajal boljše rezul
 %Dostopno na: \url{http://ftp.univie.ac.at/packages/tex/biblio/bibtex/contrib/doc/btxdoc.pdf}
 %\bibitem{licence} licence-cc.pdf. Dostopno na: \url{https://ucilnica.fri.uni-lj.si/course/view.php?id=274}
 %\end{thebibliography}
-
+\nocite{gigafida}
 \bibliographystyle{./bibliography/elsarticle-num}
 \bibliography{./bibliography/bibliography}
 \end{document}

@@ -22,4 +22,4 @@
 \contentsline {chapter}{\numberline {5}Evalvacija}{37}{chapter.5}
 \contentsline {section}{\numberline {5.1}Primerjava ozna\IeC {\v c}evalnikov}{37}{section.5.1}
 \contentsline {section}{\numberline {5.2}Analiza napak nevronskega ozna\IeC {\v c}evalnika}{40}{section.5.2}
-\contentsline {chapter}{\numberline {6}Zaklju\IeC {\v c}ki}{45}{chapter.6}
+\contentsline {chapter}{\numberline {6}Zaklju\IeC {\v c}ki}{47}{chapter.6}
