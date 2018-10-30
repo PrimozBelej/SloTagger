@@ -133,7 +133,7 @@
     % SLO: zahvala
     \input{front_pages/slo/zahvala} \clearemptydoublepage
     % SLO: posvetilo
-    \input{front_pages/slo/posvetilo} \clearemptydoublepage
+    %\input{front_pages/slo/posvetilo} \clearemptydoublepage
 \else
     % ENG: title page (insert the title page (LaTeX code) from the file pages/title.tex)
     \input{front_pages/eng/title_page} \clearemptydoublepage
