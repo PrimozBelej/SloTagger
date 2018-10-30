@@ -186,7 +186,7 @@ FUNCTION {inbrackets}
 FUNCTION {format.lastchecked}
 { lastchecked empty$
     { "" }
-    { inbrackets "navedeno " lastchecked * }
+    { inbrackets "dostopano " lastchecked * }
   if$
 }
 
