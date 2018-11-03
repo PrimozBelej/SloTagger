@@ -1,0 +1,44 @@
+1. Uvod
+
+Oblikoskladenjsko označevanje je pomembna naloga s področja obdelave naravnega
+jezika. Pri tem postopku vsaki besedi v dani povedi določimo ustrezno
+oblikoskladenjsko oznako.
+
+Informacija o oblikoskladenjskih lastnostih besed je pomembna za boljše
+razumevanje povedi, saj se da iz označenih povedi lažje sklepati o tem kakšno
+sporočilo nosi neko besedilo. Dobro označeno besedilo je pogoj za nadaljne
+naloge s področja obdelave naravnega jezika, kot sta strojno prevajanje in
+povzemanje.
+
+Sodobni pristopi k računsko podprtemu označevanju temeljijo predvsem na
+algoritmih strojnega učenja. S takšnim pristopom so se strojni označevalniki po
+natančnosti že približali človeškemu strokovnjaku, vendar ne pri vseh jezikih.
+
+Med jezike, ki so se izkazali za težavnejše za označevanje sodi tudi
+slovenščina. V tej nalogi bomo raziskali najnovejše metode strojnega
+označevanja besedil, ki se soočajo s temi težavnostmi. Razvili bomo tudi svoj
+označevalnik temeleč na globokih nevronskih mrežah in ga primerjali z
+obstoječimi rešitvami.
+
+* oblikoskladenjsko označevanje
+* uporaba označevalnika
+* korpusi
+* označevanje s pomočjo strojnega učenja
+
+1.1 Predstavitev problema
+1.2 Napoved vsebine
+
+Vsebinski del naloge je razdeljen na pet poglavij. V prvih dveh poglavjih
+predstavimo področje, obstoječe rešitve in tehnologije. Zadnja tri poglavja
+opisujejo našo rešitev, ocenijo njeno uspešnost in predlagajo možnosti za
+izboljšave.
+
+2. poglavje opisuje področje oblikoskladenjskega označevanja. Tu predstavimo
+
+    
+2. Oblikoskladenjsko označevanje
+
+3. Globoke nevronske mreže za besedila
+4. Arhitektura rešitve
+5. Evalvacija
+6. Zaključki

@@ -1,0 +1,25 @@
+\babel@toc {english}{}
+\babel@toc {slovene}{}
+\contentsline {chapter}{Povzetek}{}{chapter*.2}
+\babel@toc {english}{}
+\contentsline {chapter}{Abstract}{}{section*.4}
+\babel@toc {slovene}{}
+\contentsline {chapter}{\numberline {1}Uvod}{1}{chapter.1}
+\contentsline {chapter}{\numberline {2}Oblikoskladenjsko ozna\IeC {\v c}evanje}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Algoritmi\IeC {\v c}ne re\IeC {\v s}itve}{4}{section.2.1}
+\contentsline {section}{\numberline {2.2}Oblikoskladenjsko ozna\IeC {\v c}evanje sloven\IeC {\v s}\IeC {\v c}ine}{8}{section.2.2}
+\contentsline {section}{\numberline {2.3}Obstoje\IeC {\v c}e re\IeC {\v s}itve}{11}{section.2.3}
+\contentsline {chapter}{\numberline {3}Globoke nevronske mre\IeC {\v z}e za besedila}{13}{chapter.3}
+\contentsline {section}{\numberline {3.1}Konvolucijske nevronske mre\IeC {\v z}e}{13}{section.3.1}
+\contentsline {section}{\numberline {3.2}Rekurentne nevronske mre\IeC {\v z}e}{16}{section.3.2}
+\contentsline {section}{\numberline {3.3}Hitrocestne nevronske mre\IeC {\v z}e}{19}{section.3.3}
+\contentsline {section}{\numberline {3.4}Re\IeC {\v s}itve sorodnih problemov z uporabo nevronskih mre\IeC {\v z}}{20}{section.3.4}
+\contentsline {chapter}{\numberline {4}Arhitektura re\IeC {\v s}itve}{25}{chapter.4}
+\contentsline {section}{\numberline {4.1}Priprava podatkov}{25}{section.4.1}
+\contentsline {section}{\numberline {4.2}Nevronske mre\IeC {\v z}e}{31}{section.4.2}
+\contentsline {section}{\numberline {4.3}U\IeC {\v c}enje modela}{33}{section.4.3}
+\contentsline {section}{\numberline {4.4}Ansambel ozna\IeC {\v c}evalnikov}{34}{section.4.4}
+\contentsline {chapter}{\numberline {5}Evalvacija}{37}{chapter.5}
+\contentsline {section}{\numberline {5.1}Primerjava ozna\IeC {\v c}evalnikov}{37}{section.5.1}
+\contentsline {section}{\numberline {5.2}Analiza napak nevronskega ozna\IeC {\v c}evalnika}{40}{section.5.2}
+\contentsline {chapter}{\numberline {6}Zaklju\IeC {\v c}ki}{47}{chapter.6}
