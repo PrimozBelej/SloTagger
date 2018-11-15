@@ -49,7 +49,7 @@ def write_sents(out_file, sents):
             outfile.write('\n')
 
 
-def split_k_folds(in_vert, fold_size, k_folds, total_size, maxlen_sentence,
+def split_k_folds(in_vert, fold_size, k_folds, maxlen_sentence,
                   maxlen_word):
     stavki = get_data(in_vert, maxlen_sentence, maxlen_word)
     shuffle(stavki)
@@ -70,9 +70,14 @@ def split_k_folds(in_vert, fold_size, k_folds, total_size, maxlen_sentence,
 
 
 def main():
+    """
     split_k_folds(DATA_DIR+'ssj500k20.vert',
-                  FOLD_WIDTH, K_FOLDS, TOTAL_SAMPLES,
+                  FOLD_WIDTH, K_FOLDS,
                   MAXLEN_SENTENCE, MAXLEN_WORD)
+    """
+    split_k_folds(DATA_DIR+'ssj500k20.vert', 0, 1, MAXLEN_SENTENCE,
+                  MAXLEN_WORD)
+
 
 
 if __name__ == '__main__':
