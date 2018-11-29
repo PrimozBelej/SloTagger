@@ -5,7 +5,7 @@ from keras.layers import Input, Conv1D, Concatenate,\
     GlobalMaxPool1D, Dense, Lambda, Add, Multiply, Masking, Bidirectional,\
     Dropout, TimeDistributed
 import numpy as np
-from poslib import vlozitev_v_oznako
+from poslib import embedding2tag
 
 
 def read_vert_file(filename):
@@ -222,7 +222,7 @@ def prediction2tags(pred, length, all_tags):
     for j in range(len(binary)):
         b = binary[j]
         try:
-            sent[j] = all_tags.index(vlozitev_v_oznako(b))
+            sent[j] = all_tags.index(embedding2tag(b))
         except ValueError:
             sent[j] = -1
     return sent
