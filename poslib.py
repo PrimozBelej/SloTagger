@@ -37,16 +37,20 @@ CATEGORY_PROPERTIES = {
     'P': ('type_pronoun', 'person', 'gender', 'number', 'case', 'owner_number',
           'owner_gender', 'clitic'),
     'M': ('form', 'type_numeral', 'gender', 'number', 'case', 'definiteness'),
-    'S': ('case'),
-    'C': ('type_conjunction'),
+    'S': ('case',),
+    'C': ('type_conjunction',),
     'Q': (),
     'I': (),
     'Y': (),
-    'X': ('type_residual'),
+    'X': ('type_residual',),
     'Z': ()
 }
 
-PROPERTY_ORDER = sorted(PROPERTIES.keys())
+PROPERTY_ORDER = (
+    'category', 'definiteness', 'clitic', 'negative', 'vform', 'person', 'case',
+    'gender', 'owner_gender', 'number', 'owner_number', 'degree', 'aspect',
+    'type_verb', 'type_residual', 'type_adjective', 'type_adverb', 'type_noun',
+    'type_numeral', 'type_conjunction', 'type_pronoun', 'form', 'animate')
 
 PROPERTY_LENGTHS = dict(zip(
     PROPERTY_ORDER,
