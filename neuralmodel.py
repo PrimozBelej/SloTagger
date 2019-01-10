@@ -9,7 +9,7 @@ from keras.layers import Input, Conv1D, Concatenate,\
 import keras
 
 
-MAXLEN_WORD = 80
+MAXLEN_WORD = 70
 MAXLEN_SENTENCE = 20
 CHAR_EMBEDDING_SIZE = 60
 

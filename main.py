@@ -1,5 +1,6 @@
 import numpy as np
 import neuralmodel
+import poslib
 
 
 def read_vert_file(filename):
@@ -74,15 +75,20 @@ def sent2embedding(sent, maxlen_sent, maxlen_word, character_dict):
     return embedding
 
 
-def load_data(sents, tags, maxlen_word, maxlen_sent, character_dict, tag_dict):
+def vectorize_tags(tags, maxlen_sent, tag_dict):
     tag_dim = len(list(tag_dict.values())[0])
-    x = np.zeros((len(sents), maxlen_sent, maxlen_word))
     y = np.zeros((len(tags), maxlen_sent, tag_dim))
-    for i in range(len(sents)):
+    for i, tag in enumerate(tags):
+        y[i] = sent_tags2embedding(tag, maxlen_sent, tag_dict, tag_dim)
+    return y
+
+
+def vectorize_sentences(sentences, maxlen_sent, maxlen_word, character_dict):
+    x = np.zeros((len(sentences), maxlen_sent, maxlen_word))
+    for i, sentence in enumerate(sentences):
         x[i] = sent2embedding(
-            sents[i], maxlen_sent, maxlen_word, character_dict)
-        y[i] = sent_tags2embedding(tags[i], maxlen_sent, tag_dict, tag_dim)
-    return x, y
+            sentence, maxlen_sent, maxlen_word, character_dict)
+    return x
 
 
 def sent_tags2embedding(oznake_stavka, maxlen_sent, tag_dict, tag_dim):
@@ -108,9 +114,9 @@ def prediction2tags(prediction, embedding_dict):
     tags = list()
     pos_index, embeddings = posembeddings()
     for i in range(prediction.shape[0]):
-        binary = binarize(prediction[i, :], list(kazalo_vlozitve.values()))
+        binary = binarize(prediction[i, :], list(poslib.PROPERTY_INDEX.values()))
         str_emb = ''.join(list(binary.astype('str')))
-        if str_emb in embedding_dic:
+        if str_emb in embedding_dict:
             tags.append(embedding_dict.get(str_emb))
         else:
             tags.append(
@@ -132,13 +138,13 @@ def posembeddings():
 def main():
     # Omejitve dolzin besed in povedi
     maxlen_word = 20
-    maxlen_sent = 80
+    maxlen_sent = 70
 
     # Podatke preberemo iz datoteke vert
-    sents, tags = read_vert_file('./podatki/fold1_test.vert')
+    #sents, tags = read_vert_file('./podatki/fold1_test.vert')
 
     # Odstranimo predolge povedi
-    sents, tags = filter_sents(sents, tags, maxlen_word, maxlen_sent)
+    #sents, tags = filter_sents(sents, tags, maxlen_word, maxlen_sent)
 
     # Povedi in oznake problikujemo v vektorsko obliko
     character_dict = load_character_dict('./characterlist')
@@ -146,8 +152,17 @@ def main():
     tag_dict = load_tag_dict('./pos_embeddings')
     tag_dim = len(list(tag_dict.values())[0])
 
-    x, y = load_data(sents, tags, maxlen_word, maxlen_sent, character_dict,
-                     tag_dict)
+    sentences = [['Moj', 'pes', 'je', 'zelo', 'lep', '.']]
+    x = vectorize_sentences(sentences, maxlen_sent, maxlen_word, character_dict)
+
+    model = neuralmodel.load_model(
+        './model_5fold.json',
+        './model_10fold_fold1.h5')
+    #model = neuralmodel.build_model(x[0], character_dim, tag_dim)
+    y_predicted = model.predict(x[:1])
+
+    #x, y = load_data(sents, tags, maxlen_word, maxlen_sent, character_dict,
+    #                 tag_dict)
 
     # Zgradimo model
     """
@@ -161,25 +176,28 @@ def main():
     model.fit(x[1:], y[1:], epochs=30)
     """
 
-    model = neuralmodel.load_model(
-        './model.json', './oznacevalnik_multilabel_v2.h5')
 
     # Napovemo oznake testne povedi
-    y_predicted = model.predict(x[:1])
 
     embedding_dict = {}
     with open('./pos_embeddings') as infile:
         for line in infile:
             pos, embedding = line.strip().split(', ')
             embedding_dict[embedding] = pos
+    return y_predicted, embedding_dict
+    #for i, prediction in enumerate(y_predicted):
+    #    prediction = prediction2tags(prediction[:len(sentences[i]), :], embedding_dict)
+    #    print(sentences[0])
+    #    print(prediction)
 
-    a = y_predicted[0, :len(sents[0]), :]
-    print(a.shape)
-    prediction = prediction2tags(a,
-                                 embedding_dict)
 
-    print(tags[0])
-    print(prediction)
+    #a = y_predicted[0, :len(sents[0]), :]
+    #print(a.shape)
+    #prediction = prediction2tags(a,
+    #                             embedding_dict)
+
+    #print(tags[0])
+    #print(prediction)
 
 
 if __name__ == '__main__':
