@@ -30,9 +30,9 @@ def get_data(in_vert, maxlen_sentence, maxlen_word):
                 m_beseda = 0
 
 
-def preprocess(in_vert, out_tsv, maxlen_sentence, maxlen_word):
+def preprocess(in_vert, out_vert, maxlen_sentence, maxlen_word):
     sentences = get_data(in_vert, maxlen_sentence, maxlen_word)
-    with open(out_tsv, 'w') as outfile:
+    with open(out_vert, 'w') as outfile:
         for sentence in sentences:
             for token in sentence:
                 outfile.write('{}\t{}\t{}\n'.format(
@@ -47,7 +47,7 @@ def main():
     parser.add_argument('input', type=str,
                         help='Path to input file (*.vert).')
     parser.add_argument('output', type=str,
-                        help='Path to output file (*.tsv).')
+                        help='Path to output file.')
 
     args = parser.parse_args()
     preprocess(args.input, args.output, MAXLEN_SENTENCE, MAXLEN_WORD)
