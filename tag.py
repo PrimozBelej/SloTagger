@@ -3,6 +3,7 @@ import neuralmodel
 import poslib
 import argparse
 import os
+from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
 
 def read_vert_file(filename, fields=(0, 2)):
@@ -37,27 +38,6 @@ def read_vert_file(filename, fields=(0, 2)):
     return result
 
 
-def filter_sents(sents, tags, maxlen_word, maxlen_sent):
-    filtered_sents = []
-    filtered_tags = []
-    for i, sent in enumerate(sents):
-        if len(sent) <= maxlen_sent:
-            filtered_sents.append(sent)
-            filtered_tags.append(tags[i])
-    sents = filtered_sents
-    tags = filtered_tags
-
-    filtered_sents = []
-    filtered_tags = []
-    for i, sent in enumerate(sents):
-        if max([len(word) for word in sent]) <= maxlen_word:
-            filtered_sents.append(sent)
-            filtered_tags.append(tags[i])
-    sents = filtered_sents
-    tags = filtered_tags
-    return sents, tags
-
-
 def load_character_dict(charindex_path):
     characters = set()
     with open(charindex_path) as charfile:
@@ -75,32 +55,32 @@ def load_tag_dict(tagindex_path):
     return tag_dict
 
 
-def sent2embedding(sent, maxlen_sent, maxlen_word, character_dict):
-    embedding = np.zeros((maxlen_sent, maxlen_word))
+def sent2embedding(sent, character_dict):
+    embedding = np.zeros((MAXLEN_SENTENCE, MAXLEN_WORD))
     for i, word in enumerate(sent):
         for j, char in enumerate(word):
             embedding[i, j] = character_dict[char]
     return embedding
 
 
-def vectorize_tags(tags, maxlen_sent, tag_dict):
+def vectorize_tags(tags, tag_dict):
     tag_dim = len(list(tag_dict.values())[0])
-    y = np.zeros((len(tags), maxlen_sent, tag_dim))
+    y = np.zeros((len(tags), MAXLEN_SENTENCE, tag_dim))
     for i, tag in enumerate(tags):
-        y[i] = sent_tags2embedding(tag, maxlen_sent, tag_dict, tag_dim)
+        y[i] = sent_tags2embedding(tag, tag_dict, tag_dim)
     return y
 
 
-def vectorize_sentences(sentences, maxlen_sent, maxlen_word, character_dict):
-    x = np.zeros((len(sentences), maxlen_sent, maxlen_word))
+def vectorize_sentences(sentences, character_dict):
+    x = np.zeros((len(sentences), MAXLEN_SENTENCE, MAXLEN_WORD))
     for i, sentence in enumerate(sentences):
         x[i] = sent2embedding(
-            sentence, maxlen_sent, maxlen_word, character_dict)
+            sentence, character_dict)
     return x
 
 
-def sent_tags2embedding(oznake_stavka, maxlen_sent, tag_dict, tag_dim):
-    embedding = np.zeros((maxlen_sent, tag_dim))
+def sent_tags2embedding(oznake_stavka, tag_dict, tag_dim):
+    embedding = np.zeros((MAXLEN_SENTENCE, tag_dim))
     for i, tag in enumerate(oznake_stavka):
         embedding[i] = tag_dict[tag]
     return embedding
@@ -159,13 +139,11 @@ def write_vert(path, sentences, tags):
 
 
 def predict_tags(sentences, model):
-    maxlen_word = 20
-    maxlen_sent = 70
     character_dict = load_character_dict('./characterlist')
     character_dim = len(character_dict)
     tag_dict = load_tag_dict('./pos_embeddings')
     tag_dim = len(list(tag_dict.values())[0])
-    x = vectorize_sentences(sentences, maxlen_sent, maxlen_word, character_dict)
+    x = vectorize_sentences(sentences, character_dict)
     y_predicted = model.predict(x)
     embedding_dict = {}
     predictions = []
@@ -212,30 +190,18 @@ def main():
 
     model = neuralmodel.load_model(
         './model_5fold.json',
-        #'./model_10_1.h5'
         './model_celotni_podatki.h5'
     )
-    #sents, tags = filter_sents(sents, tags, maxlen_word, maxlen_sent)
 
-    #predictions = predict_tags([['Moj', 'pes', 'je', 'zelo', 'lep', '.']], model)
     sentences = sentences[:3]
     predictions = predict_tags(sentences[:3], model)
     write_vert(args.output, sentences, predictions)
 
-    # Omejitve dolzin besed in povedi
 
-    # Podatke preberemo iz datoteke vert
-    #sents, tags = read_vert_file('./podatki/fold1_test.vert')
-
-    # Odstranimo predolge povedi
-    #model = neuralmodel.build_model(x[0], character_dim, tag_dim)
-
-    #x, y = load_data(sents, tags, maxlen_word, maxlen_sent, character_dict,
-    #                 tag_dict)
 
     # Zgradimo model
     """
-    model = build_model(x[0, :, :], maxlen_word, maxlen_sent, character_dim,
+    model = build_model(x[0, :, :], character_dim,
                         tag_dim)
     model.compile(loss='binary_crossentropy', optimizer='adam')
     """
@@ -244,10 +210,6 @@ def main():
     """
     model.fit(x[1:], y[1:], epochs=30)
     """
-
-
-    # Napovemo oznake testne povedi
-
 
 if __name__ == '__main__':
     main()

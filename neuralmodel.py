@@ -7,10 +7,9 @@ from keras.layers import Input, Conv1D, Concatenate,\
         GlobalMaxPool1D, Dense, Lambda, Add, Multiply, Masking, Bidirectional,\
         Dropout, TimeDistributed
 import keras
+from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
 
-MAXLEN_WORD = 70
-MAXLEN_SENTENCE = 20
 CHAR_EMBEDDING_SIZE = 60
 
 

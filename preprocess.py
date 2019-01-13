@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 import argparse
+from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
-
-MAXLEN_SENTENCE = 80
-MAXLEN_WORD = 20
 
 DATA_DIR = './podatki/'
 
