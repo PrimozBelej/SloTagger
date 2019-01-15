@@ -3,6 +3,7 @@ import neuralmodel
 import poslib
 import argparse
 import os
+import subprocess
 from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
 
@@ -157,14 +158,29 @@ def predict_tags(sentences, model):
     return predictions
 
 
-def get_sentences_txt(file_path):
-    pass
+def get_sentences_txt(file_path, obeliks_path):
+    result = subprocess.run(['java', '-cp', obeliks_path+'target/classes',
+                    'org.obeliks.Tokenizer', '-if', file_path, '-o', 'obelikstemp.txt'])
+    sentences = []
+    sentence = []
+    with open('obelikstemp.txt') as tokens:
+        for line in tokens:
+            parts = line.strip().split('\t')
+            if len(parts) == 2:
+                sentence.append(parts[1])
+            else:
+                sentences.append(sentence)
+                sentence = []
+    os.remove('obelikstemp.txt')
+    return sentences
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input", help="Path to input file.")
     parser.add_argument("output", help="Path to output file.")
+    parser.add_argument("--obelikspath", help="Path to Obeliks4J tokeniser "
+                        "directory. Required in case of txt files.")
     parser.add_argument("-f", "--force", help="Overwrite output file.",
                         action="store_true")
     args = parser.parse_args()
@@ -182,7 +198,15 @@ def main():
     if args.input.endswith(".vert"):
         sentences = read_vert_file(args.input, fields=(0,))[0]
     elif args.input.endswith(".txt"):
-        sentences = get_sentences_txt(args.input)
+        obeliks_path = args.obelikspath
+        if obeliks_path is None:
+            print('When using txt files as input, path to Obeliks4J tokeniser '
+                  'has to be provided using --obelikspath argument.')
+            exit()
+        if not os.path.isdir(obeliks_path):
+            print('Invalid Obeliks4J path provided: {}'.format(obeliks_path))
+            exit()
+        sentences = get_sentences_txt(args.input, obeliks_path)
     else:
         print("Invalid input file extension. "
               "Valid input types are vert and txt.")
