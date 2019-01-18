@@ -1,28 +1,19 @@
-import numpy as np
-import neuralmodel
-import poslib
 import argparse
 import os
 import subprocess
+import numpy as np
+import neuralmodel
+import poslib
 from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
 
 def read_vert_file(filename, fields=(0, 2)):
-    contents = open(filename).readlines()
-
     result = [[] for f in fields]
     sentence_values = [[] for f in fields]
-
-    sents = []
-    sent = []
-
-    tags = []
-    sent_tags = []
-
-    for row_index, row in enumerate(contents):
-        if len(row.strip()) == 0:
-            for i, sv in enumerate(sentence_values):
-                result[i].append(sv)
+    for row_index, row in enumerate(open(filename).readlines()):
+        if not row.strip():
+            for i, value in enumerate(sentence_values):
+                result[i].append(value)
             sentence_values = [[] for f in fields]
             continue
 
@@ -34,8 +25,8 @@ def read_vert_file(filename, fields=(0, 2)):
             sentence_values[field_index].append(split_row[field].strip())
 
     if sentence_values[0]:
-        for i, sv in enumerate(sentence_values):
-            result[i].append(sv)
+        for i, value in enumerate(sentence_values):
+            result[i].append(value)
     return result
 
 
@@ -60,7 +51,13 @@ def sent2embedding(sent, character_dict):
     embedding = np.zeros((MAXLEN_SENTENCE, MAXLEN_WORD))
     for i, word in enumerate(sent):
         for j, char in enumerate(word):
-            embedding[i, j] = character_dict[char]
+            try:
+                embedding[i, j] = character_dict[char]
+            except IndexError as e:
+                print(len(sent))
+                print(i)
+                print(j)
+                exit()
     return embedding
 
 
@@ -103,12 +100,16 @@ def prediction2tags(prediction, embedding_dict, local_pred2tag=True):
     tags = list()
     pos_index, embeddings = posembeddings()
     for i in range(prediction.shape[0]):
-        sent_tags = mostprobablepos(embeddings, pos_index, prediction[i, :])
+        sent_tags = None
         if local_pred2tag:
             binary = binarize(prediction[i, :], list(poslib.PROPERTY_INDEX.values()))
             str_emb = ''.join(list(binary.astype('str')))
             if str_emb in embedding_dict:
                 sent_tags = embedding_dict.get(str_emb)
+            else:
+                sent_tags = mostprobablepos(embeddings, pos_index, prediction[i, :])
+        else:
+            sent_tags = mostprobablepos(embeddings, pos_index, prediction[i, :])
         tags.append(sent_tags)
     return tags
 
@@ -141,9 +142,6 @@ def write_vert(path, sentences, tags):
 
 def predict_tags(sentences, model):
     character_dict = load_character_dict('./characterlist')
-    character_dim = len(character_dict)
-    tag_dict = load_tag_dict('./pos_embeddings')
-    tag_dim = len(list(tag_dict.values())[0])
     x = vectorize_sentences(sentences, character_dict)
     y_predicted = model.predict(x)
     embedding_dict = {}
@@ -159,9 +157,9 @@ def predict_tags(sentences, model):
 
 
 def get_sentences_txt(file_path, obeliks_path):
-    result = subprocess.run(['java', '-cp', obeliks_path+'target/classes',
-                    'org.obeliks.Tokenizer', '-if', file_path, '-o', 'obelikstemp.txt'])
-    sentences = []
+    subprocess.run(['java', '-cp', obeliks_path+'target/classes',
+                    'org.obeliks.Tokenizer', '-if', file_path, '-o',
+                    'obelikstemp.txt'])
     sentence = []
     with open('obelikstemp.txt') as tokens:
         for line in tokens:
@@ -169,10 +167,20 @@ def get_sentences_txt(file_path, obeliks_path):
             if len(parts) == 2:
                 sentence.append(parts[1])
             else:
-                sentences.append(sentence)
+                yield sentence
                 sentence = []
     os.remove('obelikstemp.txt')
-    return sentences
+
+
+def eng2slo(tags):
+    tag_dict = {}
+    with open('en_sl_tag') as tagfile:
+        for line in tagfile:
+            en, sl = line.strip().split('\t')
+            tag_dict[en] = sl
+    for tag_i, tag in enumerate(tags):
+        tags[tag_i] = tag_dict[tag]
+    return tags
 
 
 def main():
@@ -182,6 +190,8 @@ def main():
     parser.add_argument("--obelikspath", help="Path to Obeliks4J tokeniser "
                         "directory. Required in case of txt files.")
     parser.add_argument("-f", "--force", help="Overwrite output file.",
+                        action="store_true")
+    parser.add_argument("-s", "--slo", help="Return slovene tags.",
                         action="store_true")
     args = parser.parse_args()
 
@@ -206,7 +216,7 @@ def main():
         if not os.path.isdir(obeliks_path):
             print('Invalid Obeliks4J path provided: {}'.format(obeliks_path))
             exit()
-        sentences = get_sentences_txt(args.input, obeliks_path)
+        sentences = list(get_sentences_txt(args.input, obeliks_path))
     else:
         print("Invalid input file extension. "
               "Valid input types are vert and txt.")
@@ -214,26 +224,17 @@ def main():
 
     model = neuralmodel.load_model(
         './model_5fold.json',
-        './model_celotni_podatki.h5'
+        './model_10_1.h5'
     )
 
-    sentences = sentences[:3]
-    predictions = predict_tags(sentences[:3], model)
+    sentences = sentences[:100]
+    predictions = predict_tags(sentences, model)
+    if args.slo:
+        for tags_i, tags in enumerate(predictions):
+            predictions[tags_i] = eng2slo(tags)
+
     write_vert(args.output, sentences, predictions)
 
-
-
-    # Zgradimo model
-    """
-    model = build_model(x[0, :, :], character_dim,
-                        tag_dim)
-    model.compile(loss='binary_crossentropy', optimizer='adam')
-    """
-
-    # Naucimo model
-    """
-    model.fit(x[1:], y[1:], epochs=30)
-    """
 
 if __name__ == '__main__':
     main()
