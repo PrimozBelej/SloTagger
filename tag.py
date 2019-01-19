@@ -4,30 +4,15 @@ import subprocess
 import numpy as np
 import neuralmodel
 import poslib
+import vertutils
 from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
 
-def read_vert_file(filename, fields=(0, 2)):
-    result = [[] for f in fields]
-    sentence_values = [[] for f in fields]
-    for row_index, row in enumerate(open(filename).readlines()):
-        if not row.strip():
-            for i, value in enumerate(sentence_values):
-                result[i].append(value)
-            sentence_values = [[] for f in fields]
-            continue
-
-        split_row = row.strip().split('\t')
-        if len(split_row) < max(fields)+1:
-            raise IndexError("Unexpected number of columns in row {} of file "
-                             "{}.".format(row_index, filename))
-        for field_index, field in enumerate(fields):
-            sentence_values[field_index].append(split_row[field].strip())
-
-    if sentence_values[0]:
-        for i, value in enumerate(sentence_values):
-            result[i].append(value)
-    return result
+tag_dict = {}
+with open('en_sl_tag') as tagfile:
+    for line in tagfile:
+        en, sl = line.strip().split('\t')
+        tag_dict[en] = sl
 
 
 def load_character_dict(charindex_path):
@@ -125,21 +110,6 @@ def posembeddings():
     return pos_index, pos_vector
 
 
-def write_vert(path, sentences, tags):
-    assert len(sentences) == len(tags)
-    with open(path, 'w') as outfile:
-        for sentence_index, sentence in enumerate(sentences):
-            sentence_tags = tags[sentence_index]
-            assert len(sentence_tags) == len(sentence)
-            for word_index, word in enumerate(sentence):
-                outfile.write(word)
-                outfile.write('\t')
-                outfile.write(sentence_tags[word_index])
-                outfile.write('\n')
-            outfile.write('\n')
-
-
-
 def predict_tags(sentences, model):
     character_dict = load_character_dict('./characterlist')
     x = vectorize_sentences(sentences, character_dict)
@@ -173,11 +143,6 @@ def get_sentences_txt(file_path, obeliks_path):
 
 
 def eng2slo(tags):
-    tag_dict = {}
-    with open('en_sl_tag') as tagfile:
-        for line in tagfile:
-            en, sl = line.strip().split('\t')
-            tag_dict[en] = sl
     for tag_i, tag in enumerate(tags):
         tags[tag_i] = tag_dict[tag]
     return tags
@@ -206,7 +171,7 @@ def main():
         exit()
 
     if args.input.endswith(".vert"):
-        sentences = read_vert_file(args.input, fields=(0,))[0]
+        sentences = vertutils.read(args.input, fields=(0,))[0]
     elif args.input.endswith(".txt"):
         obeliks_path = args.obelikspath
         if obeliks_path is None:
@@ -233,7 +198,7 @@ def main():
         for tags_i, tags in enumerate(predictions):
             predictions[tags_i] = eng2slo(tags)
 
-    write_vert(args.output, sentences, predictions)
+    vertutils.write(args.output, sentences, predictions)
 
 
 if __name__ == '__main__':
