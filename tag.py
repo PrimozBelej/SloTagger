@@ -1,12 +1,16 @@
 import argparse
 import os
 import subprocess
+import atexit
 import numpy as np
 import neuralmodel
 import poslib
-import vertutils
+import tsvutils
+import txtutils
 from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
+
+atexit.register(txtutils.remove_tokens_file)
 
 tag_dict = {}
 with open('en_sl_tag') as tagfile:
@@ -127,19 +131,7 @@ def predict_tags(sentences, model):
 
 
 def get_sentences_txt(file_path, obeliks_path):
-    subprocess.run(['java', '-cp', obeliks_path+'target/classes',
-                    'org.obeliks.Tokenizer', '-if', file_path, '-o',
-                    'obelikstemp.txt'])
-    sentence = []
-    with open('obelikstemp.txt') as tokens:
-        for line in tokens:
-            parts = line.strip().split('\t')
-            if len(parts) == 2:
-                sentence.append(parts[1])
-            else:
-                yield sentence
-                sentence = []
-    os.remove('obelikstemp.txt')
+    pass
 
 
 def eng2slo(tags):
@@ -148,31 +140,43 @@ def eng2slo(tags):
     return tags
 
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("input", help="Path to input file.")
-    parser.add_argument("output", help="Path to output file.")
-    parser.add_argument("--obelikspath", help="Path to Obeliks4J tokeniser "
-                        "directory. Required in case of txt files.")
-    parser.add_argument("-f", "--force", help="Overwrite output file.",
-                        action="store_true")
-    parser.add_argument("-s", "--slo", help="Return slovene tags.",
-                        action="store_true")
-    args = parser.parse_args()
+    parser.add_argument('input', type=str, help='Path to input file.')
+    parser.add_argument('output', type=str, help='Path to output file.')
+    parser.add_argument('--obelikspath', type=str,
+                        help='Path to Obeliks4J tokeniser '
+                        'directory. Required in case of txt files.')
+    parser.add_argument('-f', '--force', help='Overwrite output file.',
+                        action='store_true')
+    parser.add_argument('-s', '--slo', help='Return slovene tags.',
+                        action='store_true')
+    parser.add_argument('-bs', '--batchsize', type=int,
+                        help='Number of sentences '\
+                        'tagged at the same time.')
+    return parser.parse_args()
 
+
+def validate_args(args):
     if not os.path.exists(args.input):
-        print("File {} does not exist.".format(args.input))
+        print('File {} does not exist.'.format(args.input))
         exit()
 
     if os.path.exists(args.output) and not args.force:
-        print("Output file {} already exist. "
-              "Output file can be overwriten by passing "
-              "-f argument.".format(args.output))
+        print('Output file {} already exist. '
+              'Output file can be overwriten by passing '
+              '-f argument.'.format(args.output))
         exit()
 
-    if args.input.endswith(".vert"):
-        sentences = vertutils.read(args.input, fields=(0,))[0]
-    elif args.input.endswith(".txt"):
+
+def get_sentences(args):
+    if args.input.endswith('.tsv'):
+        sentences = tsvutils.read(args.input, fields=(0,))[0]
+    elif args.input.endswith('.xml'):
+        sentences = None
+    elif args.input.endswith('.vert'):
+        sentences = None
+    elif args.input.endswith('.txt'):
         obeliks_path = args.obelikspath
         if obeliks_path is None:
             print('When using txt files as input, path to Obeliks4J tokeniser '
@@ -181,24 +185,35 @@ def main():
         if not os.path.isdir(obeliks_path):
             print('Invalid Obeliks4J path provided: {}'.format(obeliks_path))
             exit()
-        sentences = list(get_sentences_txt(args.input, obeliks_path))
+        txtutils.tokenize(args.input, obeliks_path)
+        sentences = txtutils.get_sentences(args.batchsize)
     else:
-        print("Invalid input file extension. "
-              "Valid input types are vert and txt.")
+        print('Invalid input file extension. '
+              'Valid input types are xml/tei, vert, tsv and txt.')
         exit()
+    return sentences
+
+
+def main():
+    args = parse_args()
+    validate_args(args)
+
+    sentence_batches = get_sentences(args)
 
     model = neuralmodel.load_model(
         './model_5fold.json',
         './model_10_1.h5'
     )
 
-    sentences = sentences[:100]
-    predictions = predict_tags(sentences, model)
-    if args.slo:
-        for tags_i, tags in enumerate(predictions):
-            predictions[tags_i] = eng2slo(tags)
+    for batch_index, batch in enumerate(sentence_batches):
+        print('Tagging batch {}.'.format(batch_index+1))
+        predictions = predict_tags(batch, model)
+        if args.slo:
+            for tags_i, tags in enumerate(predictions):
+                predictions[tags_i] = eng2slo(tags)
+        print(predictions)
 
-    vertutils.write(args.output, sentences, predictions)
+    #tsvutils.write(args.output, sentences, predictions)
 
 
 if __name__ == '__main__':
