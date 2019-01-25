@@ -7,6 +7,7 @@ import neuralmodel
 import poslib
 import tsvutils
 import txtutils
+import teiutils
 from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
 
@@ -130,10 +131,6 @@ def predict_tags(sentences, model):
     return predictions
 
 
-def get_sentences_txt(file_path, obeliks_path):
-    pass
-
-
 def eng2slo(tags):
     for tag_i, tag in enumerate(tags):
         tags[tag_i] = tag_dict[tag]
@@ -151,9 +148,6 @@ def parse_args():
                         action='store_true')
     parser.add_argument('-s', '--slo', help='Return slovene tags.',
                         action='store_true')
-    parser.add_argument('-bs', '--batchsize', type=int,
-                        help='Number of sentences '\
-                        'tagged at the same time.')
     return parser.parse_args()
 
 
@@ -168,15 +162,7 @@ def validate_args(args):
               '-f argument.'.format(args.output))
         exit()
 
-
-def get_sentences(args):
-    if args.input.endswith('.tsv'):
-        sentences = tsvutils.read(args.input, fields=(0,))[0]
-    elif args.input.endswith('.xml'):
-        sentences = None
-    elif args.input.endswith('.vert'):
-        sentences = None
-    elif args.input.endswith('.txt'):
+    if args.input.endswith('txt'):
         obeliks_path = args.obelikspath
         if obeliks_path is None:
             print('When using txt files as input, path to Obeliks4J tokeniser '
@@ -185,35 +171,80 @@ def get_sentences(args):
         if not os.path.isdir(obeliks_path):
             print('Invalid Obeliks4J path provided: {}'.format(obeliks_path))
             exit()
+
+    if args.input.endswith('xml') and not args.output.endswith('xml'):
+        print('Output file extension must match input (xml).')
+        exit()
+
+    if args.input.endswith('tsv') and not args.output.endswith('tsv'):
+        print('Output file extension must match input (tsv).')
+        exit()
+
+
+def get_sentences(args):
+    if args.input.endswith('.tsv'):
+        sentences, lemmas = tsvutils.read(args.input, fields=(0, 1))
+    elif args.input.endswith('.xml'):
+        sentences = list(teiutils.read(args.input))
+        lemmas = None
+    elif args.input.endswith('.txt'):
+        obeliks_path = args.obelikspath
         txtutils.tokenize(args.input, obeliks_path)
-        sentences = txtutils.get_sentences(args.batchsize)
+        sentences = list(txtutils.get_sentences())
+        lemmas = None
     else:
         print('Invalid input file extension. '
-              'Valid input types are xml/tei, vert, tsv and txt.')
+              'Valid input types are xml/tei, tsv and txt.')
         exit()
-    return sentences
+    return sentences, lemmas
 
 
 def main():
     args = parse_args()
     validate_args(args)
-
-    sentence_batches = get_sentences(args)
-
     model = neuralmodel.load_model(
         './model_5fold.json',
         './model_10_1.h5'
     )
 
-    for batch_index, batch in enumerate(sentence_batches):
-        print('Tagging batch {}.'.format(batch_index+1))
-        predictions = predict_tags(batch, model)
+    out_type = args.output.split('.')[-1]
+    in_type = args.input.split('.')[-1]
+    if (in_type, out_type) == ('txt', 'xml'):
+        sentences, lemmas = list(get_sentences(args))
+        sentences = sentences[:5]
+        predictions = predict_tags(sentences, model)
         if args.slo:
             for tags_i, tags in enumerate(predictions):
                 predictions[tags_i] = eng2slo(tags)
-        print(predictions)
+        teiutils.write(args.output, sentences, predictions)
 
-    #tsvutils.write(args.output, sentences, predictions)
+    elif (in_type, out_type) == ('txt', 'tsv'):
+        sentences, lemmas = get_sentences(args)
+        sentences = sentences[:5]
+        predictions = predict_tags(sentences, model)
+        if args.slo:
+            for tags_i, tags in enumerate(predictions):
+                predictions[tags_i] = eng2slo(tags)
+        tsvutils.write(args.output, sentences, lemmas, predictions)
+
+    elif (in_type, out_type) == ('tsv', 'tsv'):
+        sentences, lemmas = get_sentences(args)
+        sentences = sentences[:5]
+        lemmas = lemmas[:5]
+        predictions = predict_tags(sentences, model)
+        if args.slo:
+            for tags_i, tags in enumerate(predictions):
+                predictions[tags_i] = eng2slo(tags)
+        tsvutils.write(args.output, sentences, lemmas, predictions)
+
+    elif (in_type, out_type) == ('xml', 'xml'):
+        sentences, lemmas = get_sentences(args)
+        sentences = sentences[:5]
+        predictions = predict_tags(sentences, model)
+        if args.slo:
+            for tags_i, tags in enumerate(predictions):
+                predictions[tags_i] = eng2slo(tags)
+        teiutils.update_tags(args.input, args.output, predictions)
 
 
 if __name__ == '__main__':

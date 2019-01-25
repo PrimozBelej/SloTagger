@@ -22,15 +22,23 @@ def read(filename, fields=(0, 2)):
     return result
 
 
-def write(path, sentences, tags):
+def write(path, sentences, lemmas, tags):
+    if lemmas is not None:
+        assert len(sentences) == len(lemmas)
     assert len(sentences) == len(tags)
     with open(path, 'w') as outfile:
         for sentence_index, sentence in enumerate(sentences):
             sentence_tags = tags[sentence_index]
             assert len(sentence_tags) == len(sentence)
+            if lemmas is not None:
+                sentence_lemmas = lemmas[sentence_index]
+                assert len(sentence_lemmas) == len(sentence)
             for word_index, word in enumerate(sentence):
                 outfile.write(word)
                 outfile.write('\t')
+                if lemmas is not None:
+                    outfile.write(sentence_lemmas[word_index])
+                    outfile.write('\t')
                 outfile.write(sentence_tags[word_index])
                 outfile.write('\n')
             outfile.write('\n')

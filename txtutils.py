@@ -19,8 +19,7 @@ def tokenize(input_path, obeliks_path):
         '-o', TOKENIZED_FILE_PATH])
 
 
-def get_sentences(batch_size):
-    sentences = []
+def get_sentences():
     sentence = []
     with open(TOKENIZED_FILE_PATH) as tokens:
         for line in tokens:
@@ -28,11 +27,6 @@ def get_sentences(batch_size):
             if len(parts) == 2:
                 sentence.append(parts[1])
             else:
-                sentences.append(sentence)
+                yield sentence
                 sentence = []
-                if batch_size is not None and len(sentences) == batch_size:
-                    yield sentences
-                    sentences = []
-    if sentences:
-        yield sentences
 
