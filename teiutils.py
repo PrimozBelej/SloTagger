@@ -18,26 +18,31 @@ def write(path, sentences, tags):
                                pretty_print=True)
 
 
-def parse_sentence_node(sentence_node, namespace):
+def parse_sentence_node(sentence_node, namespace, return_tags):
     sentence = []
     for child in sentence_node:
         if child.tag not in {namespace+'pc', namespace+'w'}:
             continue
         if len(child.text) > MAXLEN_WORD:
             return []
-        sentence.append(child.text)
+        if return_tags:
+            tag = child.get('ana')
+            sentence.append(tag[4:] if tag is not None and len(tag) > 4 else
+                            None)
+        else:
+            sentence.append(child.text)
     if len(sentence) > MAXLEN_SENTENCE:
         return []
     return sentence
 
 
-def read(path):
+def read(path, paragraph_parent, tags):
     tree = et.parse(path)
     root = tree.getroot()
     namespace = root.tag[:root.tag.find('}')+1]
     for sentence in tree.getroot().findall(
-        namespace+'div/'+namespace+'p/'+namespace+'s'):
-        yield parse_sentence_node(sentence, namespace)
+        namespace+paragraph_parent+'/'+namespace+'p/'+namespace+'s'):
+        yield parse_sentence_node(sentence, namespace, tags)
 
 
 def update_sentence_tags(sentence, tags, namespace):
@@ -48,13 +53,13 @@ def update_sentence_tags(sentence, tags, namespace):
         token.set('ana', 'msd:{}'.format(tags[token_index]))
 
 
-def update_tags(in_path, out_path, tags):
+def update_tags(in_path, out_path, tags, paragraph_parent):
     tree = et.parse(in_path)
     root = tree.getroot()
     namespace = root.tag[:root.tag.find('}')+1]
     for sentence_index, sentence in enumerate(
         tree.getroot().findall(
-            namespace+'div/'+namespace+'p/'+namespace+'s')):
+            namespace+paragraph_parent+'/'+namespace+'p/'+namespace+'s')):
         if sentence_index >= len(tags):
             break
         if not tags[sentence_index]:

@@ -1,26 +1,57 @@
 import argparse
+import os
+import itertools
 from sklearn.metrics import accuracy_score
-import tag
-import neuralmodel
+import teiutils
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('true', type=str,
+                        help='Path to xml/tei file containing true tags.')
+    parser.add_argument('paragraph_parent_true', type=str,
+                       help='Name of parent element of paragraphs in xml '
+                        'file containing true tags.')
+    parser.add_argument('predicted', type=str,
+                        help='Path to xml/tei file containing predicted tags.')
+    parser.add_argument('paragraph_parent_predicted', type=str,
+                       help='Name of parent element of paragraphs in xml '
+                        'file containing predicted tags.')
+    return parser.parse_args()
+
+
+def validate_args(args):
+    if not args.true.endswith('xml') or \
+       not args.predicted.endswith('.xml'):
+        print('Invalid input file extension. Expected xml.')
+        exit()
+
+    if not os.path.exists(args.true):
+        print('File {} does not exist.'.format(args.input))
+        exit()
+
+    if not os.path.exists(args.predicted):
+        print('File {} does not exist.'.format(args.predicted))
+        exit()
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input", help="Path to input file.")
-    args = parser.parse_args()
+    args = parse_args()
+    validate_args(args)
 
-    sentences, tags = tag.read_vert_file(args.input, fields=(0, 2))
+    true_tags = list(itertools.chain.from_iterable(
+        teiutils.read(args.true, args.paragraph_parent_true, True)))[:700]
 
-    model = neuralmodel.load_model(
-        './model_5fold.json',
-        './model_10_1.h5'
-    )
-    sentences = sentences[:2000]
-    tags = tags[:2000]
-    predictions = tag.predict_tags(sentences, model)
-    print(accuracy_score(
-        [tag for sentence_tags in tags for tag in sentence_tags],
-        [prediction for sentence_predictions in predictions for prediction in sentence_predictions]))
+    predicted_tags = list(itertools.chain.from_iterable(
+        teiutils.read(args.predicted, args.paragraph_parent_predicted,
+                      True)))[:700]
+
+    accuracy_pos = accuracy_score(true_tags, predicted_tags)
+    accuracy_category = accuracy_score([tag[0] for tag in true_tags],
+                                       [tag[0] for tag in predicted_tags])
+
+    print('Accuracy score for complete POS: {}'.format(accuracy_pos))
+    print('Accuracy score for categories: {}'.format(accuracy_category))
 
 
 if __name__ == '__main__':

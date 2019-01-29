@@ -5,13 +5,10 @@ import atexit
 import numpy as np
 import neuralmodel
 import poslib
-import tsvutils
-import txtutils
 import teiutils
+import txtutils
 from config import MAXLEN_SENTENCE, MAXLEN_WORD
 
-
-atexit.register(txtutils.remove_tokens_file)
 
 tag_dict = {}
 with open('en_sl_tag') as tagfile:
@@ -118,7 +115,9 @@ def posembeddings():
 def predict_tags(sentences, model):
     character_dict = load_character_dict('./characterlist')
     x = vectorize_sentences(sentences, character_dict)
+    print(x.shape)
     y_predicted = model.predict(x)
+    print(y_predicted.shape)
     embedding_dict = {}
     predictions = []
     with open('./pos_embeddings') as infile:
@@ -152,14 +151,12 @@ def parse_args():
 
 
 def validate_args(args):
-    if not os.path.exists(args.input):
-        print('File {} does not exist.'.format(args.input))
+    if not args.input.endswith('xml') and not args.input.endswith('txt'):
+        print('Invalid input file extension. Expected txt or xml.')
         exit()
 
-    if os.path.exists(args.output) and not args.force:
-        print('Output file {} already exist. '
-              'Output file can be overwriten by passing '
-              '-f argument.'.format(args.output))
+    if not os.path.exists(args.input):
+        print('File {} does not exist.'.format(args.input))
         exit()
 
     if args.input.endswith('txt'):
@@ -172,31 +169,30 @@ def validate_args(args):
             print('Invalid Obeliks4J path provided: {}'.format(obeliks_path))
             exit()
 
-    if args.input.endswith('xml') and not args.output.endswith('xml'):
-        print('Output file extension must match input (xml).')
+    if not args.output.endswith('xml'):
+        print('Invalid output file extension. Expected xml.')
         exit()
 
-    if args.input.endswith('tsv') and not args.output.endswith('tsv'):
-        print('Output file extension must match input (tsv).')
+    if os.path.exists(args.output) and not args.force:
+        print('Output file {} already exist. '
+              'Output file can be overwriten by passing '
+              '-f argument.'.format(args.output))
         exit()
+
 
 
 def get_sentences(args):
-    if args.input.endswith('.tsv'):
-        sentences, lemmas = tsvutils.read(args.input, fields=(0, 1))
-    elif args.input.endswith('.xml'):
-        sentences = list(teiutils.read(args.input))
-        lemmas = None
+    if args.input.endswith('.xml'):
+        sentences = list(teiutils.read(args.input, 'div', False))
     elif args.input.endswith('.txt'):
         obeliks_path = args.obelikspath
-        txtutils.tokenize(args.input, obeliks_path)
-        sentences = list(txtutils.get_sentences())
-        lemmas = None
+        txtutils.tokenize(args.input, obeliks_path, args.output)
+        sentences = list(teiutils.read(args.output, 'text', False))
     else:
         print('Invalid input file extension. '
               'Valid input types are xml/tei, tsv and txt.')
         exit()
-    return sentences, lemmas
+    return sentences
 
 
 def main():
@@ -207,44 +203,24 @@ def main():
         './model_10_1.h5'
     )
 
-    out_type = args.output.split('.')[-1]
-    in_type = args.input.split('.')[-1]
-    if (in_type, out_type) == ('txt', 'xml'):
-        sentences, lemmas = list(get_sentences(args))
-        sentences = sentences[:5]
-        predictions = predict_tags(sentences, model)
-        if args.slo:
-            for tags_i, tags in enumerate(predictions):
-                predictions[tags_i] = eng2slo(tags)
-        teiutils.write(args.output, sentences, predictions)
-
-    elif (in_type, out_type) == ('txt', 'tsv'):
-        sentences, lemmas = get_sentences(args)
-        sentences = sentences[:5]
-        predictions = predict_tags(sentences, model)
-        if args.slo:
-            for tags_i, tags in enumerate(predictions):
-                predictions[tags_i] = eng2slo(tags)
-        tsvutils.write(args.output, sentences, lemmas, predictions)
-
-    elif (in_type, out_type) == ('tsv', 'tsv'):
-        sentences, lemmas = get_sentences(args)
-        sentences = sentences[:5]
-        lemmas = lemmas[:5]
-        predictions = predict_tags(sentences, model)
-        if args.slo:
-            for tags_i, tags in enumerate(predictions):
-                predictions[tags_i] = eng2slo(tags)
-        tsvutils.write(args.output, sentences, lemmas, predictions)
-
-    elif (in_type, out_type) == ('xml', 'xml'):
-        sentences, lemmas = get_sentences(args)
-        sentences = sentences[:5]
-        predictions = predict_tags(sentences, model)
-        if args.slo:
-            for tags_i, tags in enumerate(predictions):
-                predictions[tags_i] = eng2slo(tags)
-        teiutils.update_tags(args.input, args.output, predictions)
+    sentences = list(get_sentences(args))
+    sentences = sentences[:2000]
+    predictions = predict_tags(sentences, model)
+    if args.slo:
+        for tags_i, tags in enumerate(predictions):
+            predictions[tags_i] = eng2slo(tags)
+    if args.input.endswith('.xml'):
+        teiutils.update_tags(
+        args.input,
+        args.output,
+        predictions,
+        'div')
+    elif args.input.endswith('.txt'):
+        teiutils.update_tags(
+        args.output,
+        args.output,
+        predictions,
+        'text')
 
 
 if __name__ == '__main__':
