@@ -64,6 +64,10 @@ def vectorize_tags(tags, tag_dict):
     tag_dim = len(list(tag_dict.values())[0])
     y = np.zeros((len(tags), MAXLEN_SENTENCE, tag_dim))
     for i, tag in enumerate(tags):
+        if len(tag) > MAXLEN_SENTENCE:
+            print('Sentence {} exceeds maximal length of {}.'
+                  .format(i, MAXLEN_SENTENCE))
+            continue
         y[i] = sent_tags2embedding(tag, tag_dict, tag_dim)
     return y
 
