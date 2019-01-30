@@ -36,12 +36,12 @@ def parse_sentence_node(sentence_node, namespace, return_tags):
     return sentence
 
 
-def read(path, paragraph_parent, tags):
+def read(path, tags):
     tree = et.parse(path)
     root = tree.getroot()
     namespace = root.tag[:root.tag.find('}')+1]
     for sentence in tree.getroot().findall(
-        namespace+paragraph_parent+'/'+namespace+'p/'+namespace+'s'):
+        '*/'+namespace+'p/'+namespace+'s'):
         yield parse_sentence_node(sentence, namespace, tags)
 
 
@@ -53,13 +53,13 @@ def update_sentence_tags(sentence, tags, namespace):
         token.set('ana', 'msd:{}'.format(tags[token_index]))
 
 
-def update_tags(in_path, out_path, tags, paragraph_parent):
+def update_tags(in_path, out_path, tags):
     tree = et.parse(in_path)
     root = tree.getroot()
     namespace = root.tag[:root.tag.find('}')+1]
     for sentence_index, sentence in enumerate(
         tree.getroot().findall(
-            namespace+paragraph_parent+'/'+namespace+'p/'+namespace+'s')):
+            '*/'+namespace+'p/'+namespace+'s')):
         if sentence_index >= len(tags):
             break
         if not tags[sentence_index]:

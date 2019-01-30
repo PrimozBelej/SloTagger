@@ -127,9 +127,7 @@ def posembeddings():
 def predict_tags(sentences, model):
     character_dict = load_character_dict('./characterlist')
     x = vectorize_sentences(sentences, character_dict)
-    print(x.shape)
     y_predicted = model.predict(x)
-    print(y_predicted.shape)
     embedding_dict = {}
     predictions = []
     with open('./pos_embeddings') as infile:
@@ -195,11 +193,11 @@ def validate_args(args):
 
 def get_sentences(args):
     if args.input.endswith('.xml'):
-        sentences = list(teiutils.read(args.input, 'div', False))
+        sentences = list(teiutils.read(args.input, False))
     elif args.input.endswith('.txt'):
         obeliks_path = args.obelikspath
         txtutils.tokenize(args.input, obeliks_path, args.output)
-        sentences = list(teiutils.read(args.output, 'text', False))
+        sentences = list(teiutils.read(args.output, False))
     else:
         print('Invalid input file extension. '
               'Valid input types are xml/tei, tsv and txt.')
@@ -216,23 +214,15 @@ def main():
     )
 
     sentences = list(get_sentences(args))
-    sentences = sentences[:2000]
+    sentences = sentences[:3]
     predictions = predict_tags(sentences, model)
     if args.slo:
         for tags_i, tags in enumerate(predictions):
             predictions[tags_i] = eng2slo(tags)
     if args.input.endswith('.xml'):
-        teiutils.update_tags(
-        args.input,
-        args.output,
-        predictions,
-        'div')
+        teiutils.update_tags(args.input, args.output, predictions)
     elif args.input.endswith('.txt'):
-        teiutils.update_tags(
-        args.output,
-        args.output,
-        predictions,
-        'text')
+        teiutils.update_tags(args.output, args.output, predictions)
 
 
 if __name__ == '__main__':
