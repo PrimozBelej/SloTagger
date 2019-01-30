@@ -9,14 +9,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('true', type=str,
                         help='Path to xml/tei file containing true tags.')
-    parser.add_argument('paragraph_parent_true', type=str,
-                       help='Name of parent element of paragraphs in xml '
-                        'file containing true tags.')
     parser.add_argument('predicted', type=str,
                         help='Path to xml/tei file containing predicted tags.')
-    parser.add_argument('paragraph_parent_predicted', type=str,
-                       help='Name of parent element of paragraphs in xml '
-                        'file containing predicted tags.')
     return parser.parse_args()
 
 
@@ -40,18 +34,17 @@ def main():
     validate_args(args)
 
     true_tags = list(itertools.chain.from_iterable(
-        teiutils.read(args.true, args.paragraph_parent_true, True)))[:700]
+        teiutils.read(args.true, True)))[:2000]
 
     predicted_tags = list(itertools.chain.from_iterable(
-        teiutils.read(args.predicted, args.paragraph_parent_predicted,
-                      True)))[:700]
+        teiutils.read(args.predicted, True)))[:2000]
 
     accuracy_pos = accuracy_score(true_tags, predicted_tags)
     accuracy_category = accuracy_score([tag[0] for tag in true_tags],
                                        [tag[0] for tag in predicted_tags])
 
-    print('Accuracy score for complete POS: {}'.format(accuracy_pos))
-    print('Accuracy score for categories: {}'.format(accuracy_category))
+    print('Accuracy score for POS: {}'.format(accuracy_pos))
+    print('Accuracy score for category: {}'.format(accuracy_category))
 
 
 if __name__ == '__main__':
