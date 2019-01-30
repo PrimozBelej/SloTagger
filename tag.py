@@ -34,17 +34,29 @@ def load_tag_dict(tagindex_path):
     return tag_dict
 
 
-def sent2embedding(sent, character_dict):
+def sent2embedding(sentence, character_dict, sentence_index):
     embedding = np.zeros((MAXLEN_SENTENCE, MAXLEN_WORD))
-    for i, word in enumerate(sent):
+    if len(sentence) > MAXLEN_SENTENCE:
+        print('Sentence {} exceeds maximal length of {}.'
+              .format(sentence_index, MAXLEN_SENTENCE))
+        return embedding
+    for i, word in enumerate(sentence):
+        if len(word) > MAXLEN_WORD:
+            print('Word {} in sentence {} exceed maximal length of {}.'
+                  .format(word, sentence_index, MAXLEN_WORD))
+            # Set word containing invalid character to zeroes
+            embedding[i, :] *= 0
+            continue
         for j, char in enumerate(word):
             try:
                 embedding[i, j] = character_dict[char]
-            except IndexError as e:
-                print(len(sent))
-                print(i)
-                print(j)
-                exit()
+            except KeyError as e:
+                print('Invalid character {} in sentence {}.'
+                      .format(char, sentence_index))
+                # Set word containing invalid character to zeroes
+                embedding[i, :] *= 0
+                i += 1
+                break
     return embedding
 
 
@@ -58,9 +70,9 @@ def vectorize_tags(tags, tag_dict):
 
 def vectorize_sentences(sentences, character_dict):
     x = np.zeros((len(sentences), MAXLEN_SENTENCE, MAXLEN_WORD))
-    for i, sentence in enumerate(sentences):
-        x[i] = sent2embedding(
-            sentence, character_dict)
+    for sentence_index, sentence in enumerate(sentences):
+        x[sentence_index] = sent2embedding(
+            sentence, character_dict, sentence_index)
     return x
 
 
