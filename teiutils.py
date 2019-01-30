@@ -36,12 +36,18 @@ def parse_sentence_node(sentence_node, namespace, return_tags):
     return sentence
 
 
-def read(path, tags):
+def read(path, tags, beginning=0, end=-1):
     tree = et.parse(path)
     root = tree.getroot()
     namespace = root.tag[:root.tag.find('}')+1]
-    for sentence in tree.getroot().findall(
-        '*/'+namespace+'p/'+namespace+'s'):
+    sentences = tree.getroot().findall('*/'+namespace+'p/'+namespace+'s')
+    if end < 0:
+        end = len(sentences)
+    for sentence_index, sentence in enumerate(sentences):
+        if beginning > sentence_index:
+            continue
+        if end <= sentence_index:
+            break
         yield parse_sentence_node(sentence, namespace, tags)
 
 
