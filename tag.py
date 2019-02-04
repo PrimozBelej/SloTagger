@@ -161,6 +161,14 @@ def parse_args():
                         action='store_true')
     parser.add_argument('-s', '--slo', help='Return slovene tags.',
                         action='store_true')
+    parser.add_argument('-b', '--beginning', type=int, default=0,
+                        help='Index of the first sententence '
+                        '(inclusive). Omitted parameter means set '
+                        'begins with the first sentence.')
+    parser.add_argument('-e', '--end', type=int, default=-1,
+                        help='Index of the last sentence in the set '
+                        '(exclusive). Omitted parameter means set '
+                        'ends with the last sentence.')
     return parser.parse_args()
 
 
@@ -193,15 +201,21 @@ def validate_args(args):
               '-f argument.'.format(args.output))
         exit()
 
+    if args.beginning > args.end:
+        print('Invalid range specified. End must be greater than beginning.')
+        exit()
+
 
 
 def get_sentences(args):
     if args.input.endswith('.xml'):
-        sentences = list(teiutils.read(args.input, False))
+        sentences = list(teiutils.read(args.input, False, args.beginning,
+                                       args.end))
     elif args.input.endswith('.txt'):
         obeliks_path = args.obelikspath
         txtutils.tokenize(args.input, obeliks_path, args.output)
-        sentences = list(teiutils.read(args.output, False))
+        sentences = list(teiutils.read(args.output, False, args.beginning,
+                                       args.end))
     else:
         print('Invalid input file extension. '
               'Valid input types are xml/tei, tsv and txt.')
@@ -218,15 +232,16 @@ def main():
     )
 
     sentences = list(get_sentences(args))
-    sentences = sentences[:3]
     predictions = predict_tags(sentences, model)
     if args.slo:
         for tags_i, tags in enumerate(predictions):
             predictions[tags_i] = eng2slo(tags)
     if args.input.endswith('.xml'):
-        teiutils.update_tags(args.input, args.output, predictions)
+        teiutils.update_tags(args.input, args.output, predictions,
+                             args.beginning)
     elif args.input.endswith('.txt'):
-        teiutils.update_tags(args.output, args.output, predictions)
+        teiutils.update_tags(args.output, args.output, predictions,
+                             args.beginning)
 
 
 if __name__ == '__main__':
