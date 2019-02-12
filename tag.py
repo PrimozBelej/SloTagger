@@ -27,11 +27,13 @@ def load_character_dict(charindex_path):
     return character_dict
 
 
-def load_tag_dict(tagindex_path):
+def load_tag_dict(tagindex_path, slo=False):
     tagset = open(tagindex_path).readlines()
     tagset = [o.strip().split(', ') for o in tagset]
-    tag_dict = {o: np.array(list(v)) for o, v in tagset}
-    return tag_dict
+    if slo:
+        tagset = [(tag_dict[o], emb) for (o, emb) in tagset]
+    tagdict = {o: np.array(list(v)) for o, v in tagset}
+    return tagdict
 
 
 def sent2embedding(sentence, character_dict, sentence_index):
