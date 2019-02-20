@@ -34,10 +34,10 @@ def main():
     validate_args(args)
 
     true_tags = list(itertools.chain.from_iterable(
-        teiutils.read(args.true, True)))[:2000]
+        teiutils.read(args.true, True)))
 
     predicted_tags = list(itertools.chain.from_iterable(
-        teiutils.read(args.predicted, True)))[:2000]
+        teiutils.read(args.predicted, True)))
 
     accuracy_pos = accuracy_score(true_tags, predicted_tags)
     accuracy_category = accuracy_score([tag[0] for tag in true_tags],
