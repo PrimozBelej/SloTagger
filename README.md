@@ -22,7 +22,7 @@ python tag.py input.xml output.xml
 
 #### Tagging sentences in plain text files ####
 
-Tagging of text files requires Obeliks4J (https://github.com/clarinsi/Obeliks4J) for segmentation and tokenisation. Path to Obeliks4J directory must be passed through `--obelikspath` parameter.
+Tagging of text files requires [Obeliks4J](https://github.com/clarinsi/Obeliks4J) for segmentation and tokenisation. Path to Obeliks4J directory must be passed through `--obelikspath` parameter.
 ```
 python tag.py input.txt output.xml --obelikspath /home/user/Obeliks4J/
 ```
