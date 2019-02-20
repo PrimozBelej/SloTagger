@@ -229,9 +229,8 @@ def main():
     args = parse_args()
     validate_args(args)
     model = neuralmodel.load_model(
-        './model_5fold.json',
-        './model_10_1.h5'
-    )
+        './model.json',
+        './model_weights.h5')
 
     sentences = list(get_sentences(args))
     predictions = predict_tags(sentences, model)
