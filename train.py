@@ -75,7 +75,7 @@ def main():
     model.compile(loss='binary_crossentropy', optimizer='adam')
     model.fit(x, y, epochs=1)
     neuralmodel.save_model(model, args.output+'/model.json')
-    model.save_weights(args.output+'/weights.h5')
+    model.save_weights(args.output+'/model_weights.h5')
 
 
 if __name__ == '__main__':
