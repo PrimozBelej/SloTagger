@@ -20,6 +20,8 @@ def parse_args():
                         'ends with the last sentence.')
     parser.add_argument('-s', '--slo', action='store_true',
                         help='Tags in input file are in slovene language.')
+    parser.add_argument('-n', '--nepoch', type=int, default=20,
+                        help='Number of training epoch.')
     return parser.parse_args()
 
 
@@ -65,15 +67,15 @@ def main():
     tags = list(teiutils.read(args.input, True, args.beginning, args.end))
 
     charset = get_character_set(sentences)
-    write_character_set(charset, args.output+'/charset')
-    character_dict = tag.load_character_dict(args.output+'/charset')
+    write_character_set(charset, args.output+'/characterlist')
+    character_dict = tag.load_character_dict(args.output+'/characterlist')
     x = tag.vectorize_sentences(sentences, character_dict)
 
     tag_dict = tag.load_tag_dict('./pos_embeddings', args.slo)
     y = tag.vectorize_tags(tags, tag_dict)
     model = neuralmodel.build_model(x[0], len(character_dict), y.shape[2])
     model.compile(loss='binary_crossentropy', optimizer='adam')
-    model.fit(x, y, epochs=1)
+    model.fit(x, y, epochs=args.nepoch)
     neuralmodel.save_model(model, args.output+'/model.json')
     model.save_weights(args.output+'/model_weights.h5')
 
