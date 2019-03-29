@@ -7,8 +7,15 @@ Our POS tagger has been presented in thesis ***Part of speech tagging of slovene
 *The thesis deals with part of speech tagging of Slovene language. Part of speech tagging is a process of matching sentences in natural language with a sequence of suitable tags, which contain information about parts of speech and morphological properties of words. Our solution uses character-level representation of words, which is different from typical solutions, which process input sentences as sequences of words. Our part of speech tagger is implemented using convolutional and recurrent neural networks. Unlike common approaches that address this problem as multi-class classification, our solution proposes a multi-label classification approach. In order to improve our results we implement an ensemble of three part of speech taggers. When comparing our solution with existing ones, we find that the proposed solution achieves the best results.*
 
 
-## Examples
+## Training corpus
+Our model has been trained on SSJ500k training corpus. This corpus is available at clarin.si: [Training corpus SSJ500k 2.2](https://www.clarin.si/repository/xmlui/handle/11356/1210) 
 
+
+## Trained model
+Due to file size limitations of GitHub, trained model (model_weights.h5) is not available in this repository. It can be acquired at clarin.si repository: [Part-of-speech tagger of Slovene language](https://www.clarin.si/repository/xmlui/handle/11356/1211)
+
+
+## Examples
 
 ### Tagging using pretrained model
 
