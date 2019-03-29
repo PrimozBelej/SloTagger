@@ -8,7 +8,7 @@ Our POS tagger has been presented in thesis ***Part of speech tagging of slovene
 
 
 ## Training corpus
-Our model has been trained on SSJ500k training corpus. This corpus is available at clarin.si: [Training corpus SSJ500k 2.2](https://www.clarin.si/repository/xmlui/handle/11356/1210) 
+Our model has been trained on SSJ500k training corpus. This corpus is available at clarin.si: [Training corpus SSJ500k 2.2](https://www.clarin.si/repository/xmlui/handle/11356/1210) Our model has been trained using ssj500k-en.TEI.
 
 
 ## Trained model
